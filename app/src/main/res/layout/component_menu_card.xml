@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_menu_card"
+    android:elevation="3dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="30dp">
+
+    <ImageView
+        android:id="@+id/ivMenuIcon"
+        android:layout_width="55dp"
+        android:layout_height="55dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_history"
+        app:tint="@color/color_white" />
+
+    <TextView
+        android:id="@+id/tvMenuLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="Riwayat Hadir"
+        android:textColor="@color/color_white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+</LinearLayout>
