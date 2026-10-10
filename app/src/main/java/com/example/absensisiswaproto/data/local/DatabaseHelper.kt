@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.absensisiswaproto.data.model.Absensi
 import com.example.absensisiswaproto.data.model.User
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -68,7 +69,7 @@ class DatabaseHelper(context: Context) :
 
     private fun seedData(db: SQLiteDatabase) {
         insertUser(db, "12345", "Jacobi Ambasuki", "ngawi123", "siswa", "XII RPL 3")
-        insertUser(db, "67890", "Arata Naoko", "sukiaselilohyah", "siswa", "XII DKV 2")
+        insertUser(db, "67890", "Arata Naoko", "sukiaselilohyah", "siswa", "XII FM 2")
         insertUser(db, "admin01", "Guru", "admin123", "admin", "XI PSPT 1")
     }
 
@@ -139,6 +140,35 @@ class DatabaseHelper(context: Context) :
         val sudah = cursor.count > 0
         cursor.close()
         return sudah
+    }
+
+    fun getAbsenHariIni(userId: Int): Absensi? {
+        val tanggal = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_ABSEN WHERE $COL_ABSEN_USER_ID = ? AND $COL_ABSEN_TANGGAL = ? LIMIT 1",
+            arrayOf(userId.toString(), tanggal)
+        )
+
+        var absensi: Absensi? = null
+        if (cursor.moveToFirst()) {
+            absensi = Absensi(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ABSEN_ID)),
+                userId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ABSEN_USER_ID)),
+                tanggal = cursor.getString(cursor.getColumnIndexOrThrow(COL_ABSEN_TANGGAL)),
+                jam = cursor.getString(cursor.getColumnIndexOrThrow(COL_ABSEN_JAM)),
+                status = cursor.getString(cursor.getColumnIndexOrThrow(COL_ABSEN_STATUS)),
+                metode = cursor.getString(cursor.getColumnIndexOrThrow(COL_ABSEN_METODE))
+            )
+        }
+        cursor.close()
+        return absensi
+    }
+
+    fun isHariLibur(): Boolean {
+        val cal = Calendar.getInstance()
+        val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+        return dayOfWeek == Calendar.SATURDAY || dayOfWeek == Calendar.SUNDAY
     }
 
     fun getRiwayatAbsen(userId: Int): List<Absensi> {

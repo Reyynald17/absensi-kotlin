@@ -96,16 +96,17 @@
                 android:layout_height="28dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_kalendar"
-                app:tint="@color/color_white" />
+                app:tint="@color/color_light_blue" />
 
             <TextView
                 android:id="@+id/tvFilterKalender"
                 android:layout_width="0dp"
+                android:gravity="center"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:layout_weight="1"
                 android:text="Kalender"
-                android:textColor="@color/color_white"
+                android:textColor="@color/color_black"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -115,7 +116,7 @@
                 android:layout_height="24dp"
                 android:contentDescription="@null"
                 android:src="@drawable/ic_arrow_down"
-                app:tint="@color/color_white" />
+                app:tint="@color/color_light_blue" />
 
         </LinearLayout>
 

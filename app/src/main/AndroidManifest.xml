@@ -48,6 +48,22 @@
             android:name=".ui.kalender.KalenderActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+        <activity
+            android:name=".ui.notifikasi.NotificationActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+        <activity
+            android:name=".ui.absen.AbsenActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+        <activity
+            android:name=".ui.absen.ScanAbsenActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+        <activity
+            android:name=".ui.pelajaran.PelajaranActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 
     </application>
 

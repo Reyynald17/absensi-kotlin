@@ -49,7 +49,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
-                android:text="kalender"
+                android:text="Kalender"
                 android:textColor="@color/color_white"
                 android:textSize="22sp"
                 android:textStyle="bold" />
@@ -58,7 +58,7 @@
 
     </RelativeLayout>
 
-    <!-- VIEW STATE 1: MONTH GRID SELECTION -->
+    <!-- VIEW STATE 1: MONTH GRID -->
     <ScrollView
         android:id="@+id/layoutMonthGrid"
         android:layout_width="0dp"
@@ -69,37 +69,23 @@
         android:layout_marginBottom="110dp"
         android:background="@drawable/bg_grey_container"
         android:fillViewport="true"
-        android:padding="12dp"
+        android:padding="6dp"
         android:scrollbars="none"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerLayout">
 
-        <GridLayout
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvMonths"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:columnCount="2"
-            android:useDefaultMargins="true">
-
-            <Button android:id="@+id/btnJanuari" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="JANUARI" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnFebuari" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="FEBUARI" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnMaret" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="MARET" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnApril" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="APRIL" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnMei" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="MEI" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnJuni" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="JUNI" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnJuli" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="JULI" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnAgustus" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="AGUSTUS" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnSeptember" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="SEPTEMBER" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnOktober" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="OKTOBER" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnNovember" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="NOVEMBER" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-            <Button android:id="@+id/btnDesember" android:layout_width="0dp" android:layout_height="80dp" android:layout_columnWeight="1" android:backgroundTint="#0088E4" android:text="DESEMBER" android:textColor="@color/color_white" android:textSize="15sp" android:textStyle="bold" app:cornerRadius="18dp" />
-
-        </GridLayout>
+            android:nestedScrollingEnabled="false"
+            android:overScrollMode="never" />
 
     </ScrollView>
 
-    <!-- VIEW STATE 2: MONTHLY CALENDAR DETAIL (MATCH SCREENSHOT 2) -->
+    <!-- VIEW STATE 2: MONTHLY CALENDAR DETAIL -->
     <LinearLayout
         android:id="@+id/layoutCalendarDetail"
         android:layout_width="0dp"
@@ -123,15 +109,26 @@
             android:background="@drawable/bg_dark_blue_card"
             android:orientation="vertical">
 
-            <!-- BRIGHT BLUE MONTH HEADER BAR -->
+            <!-- MONTH HEADER BAR -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_button_rounded"
-                android:paddingStart="16dp"
+                android:background="@drawable/bg_month_header"
+                android:paddingStart="12dp"
                 android:paddingTop="12dp"
-                android:paddingEnd="16dp"
+                android:paddingEnd="12dp"
                 android:paddingBottom="12dp">
+
+                <ImageView
+                    android:id="@+id/btnPrevMonth"
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_arrow_back"
+                    app:tint="@color/color_white" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -174,14 +171,14 @@
 
             </RelativeLayout>
 
-            <!-- DAYS OF WEEK ROW -->
+            <!-- DAYS OF WEEK -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
+                android:orientation="horizontal"
                 android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:orientation="horizontal">
+                android:paddingEnd="8dp">
 
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="Sen" android:textColor="@color/color_white" android:textSize="12sp" android:textStyle="bold" />
                 <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="center" android:text="Sel" android:textColor="@color/color_white" android:textSize="12sp" android:textStyle="bold" />
@@ -193,18 +190,20 @@
 
             </LinearLayout>
 
-            <!-- GRID DAYS RECYCLERVIEW -->
+            <!-- CALENDAR GRID -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCalendarDays"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="0dp"
                 android:layout_marginTop="6dp"
+                android:layout_weight="1"
+                android:nestedScrollingEnabled="false"
                 android:paddingStart="8dp"
                 android:paddingEnd="8dp" />
 
         </LinearLayout>
 
-        <!-- INFORMASI BOX CARD -->
+        <!-- INFORMASI BOX -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -213,7 +212,6 @@
             android:orientation="vertical"
             android:padding="14dp">
 
-            <!-- HEADER ROW WITH LEGEND -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -234,7 +232,6 @@
                     android:layout_alignParentEnd="true"
                     android:orientation="horizontal">
 
-                    <!-- RED DOT LIBUR -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -260,7 +257,6 @@
                         android:layout_width="14dp"
                         android:layout_height="1dp" />
 
-                    <!-- GREEN DOT UPACARA -->
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -286,83 +282,20 @@
 
             </RelativeLayout>
 
-            <!-- EVENT LIST TEXT -->
+            <!-- DYNAMIC EVENT LIST -->
             <LinearLayout
                 android:id="@+id/layoutEventList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tvEvent1Number"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="1"
-                    android:textColor="#FF1744"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvEvent1Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Tahun baru 2026 masehi"
-                    android:textColor="@color/color_white"
-                    android:textSize="11sp" />
-
-                <TextView
-                    android:id="@+id/tvEvent2Number"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="6dp"
-                    android:text="16"
-                    android:textColor="#FF1744"
-                    android:textSize="14sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/tvEvent2Title"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Isra Mi'raj Nabi Muhammad SAW"
-                    android:textColor="@color/color_white"
-                    android:textSize="11sp" />
-
-            </LinearLayout>
+                android:orientation="vertical" />
 
         </LinearLayout>
 
     </LinearLayout>
 
     <!-- STUDENT ILLUSTRATIONS -->
-    <ImageView
-        android:id="@+id/ivStudentLeft"
-        android:layout_width="85dp"
-        android:layout_height="115dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="55dp"
-        android:contentDescription="@null"
-        android:elevation="6dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/siswa_kiri"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivStudentRight"
-        android:layout_width="85dp"
-        android:layout_height="115dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="55dp"
-        android:contentDescription="@null"
-        android:elevation="6dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/siswa_kanan"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- BOTTOM NAVIGATION -->
     <include
         android:id="@+id/bottomNav"
         layout="@layout/component_bottom_nav"
@@ -371,5 +304,32 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivStudentLeft"
+        android:layout_width="108dp"
+        android:layout_height="129dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="4dp"
+        android:contentDescription="@null"
+        android:elevation="6dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/siswa_kiri"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- BOTTOM NAV -->
+    <ImageView
+        android:id="@+id/ivStudentRight"
+        android:layout_width="107dp"
+        android:layout_height="125dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
+        android:contentDescription="@null"
+        android:elevation="6dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/siswa_kanan"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

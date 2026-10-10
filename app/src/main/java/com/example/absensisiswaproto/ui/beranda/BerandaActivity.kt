@@ -8,7 +8,9 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.databinding.ActivityBerandaBinding
+import com.example.absensisiswaproto.ui.absen.AbsenActivity
 import com.example.absensisiswaproto.ui.kalender.KalenderActivity
+import com.example.absensisiswaproto.ui.notifikasi.NotificationActivity
 import com.example.absensisiswaproto.ui.pelajaran.PelajaranActivity
 import com.example.absensisiswaproto.ui.profile.ProfileActivity
 import com.example.absensisiswaproto.ui.riwayat.RiwayatActivity
@@ -50,7 +52,14 @@ class BerandaActivity : AppCompatActivity() {
 
     private fun setupHeader() {
         binding.headerLayout.btnNotification.setOnClickListener {
-            Toast.makeText(this, "Notifikasi ditekan", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, NotificationActivity::class.java).apply {
+                putExtra("EXTRA_USER_ID", userId)
+                putExtra("EXTRA_USER_NIS", userNis)
+                putExtra("EXTRA_USER_NAMA", userNama)
+                putExtra("EXTRA_USER_ROLE", userRole)
+                putExtra("EXTRA_USER_KELAS", userKelas)
+            }
+            startActivity(intent)
         }
     }
 
@@ -138,7 +147,6 @@ class BerandaActivity : AppCompatActivity() {
                 putExtra("EXTRA_USER_NIS", userNis)
                 putExtra("EXTRA_USER_NAMA", userNama)
                 putExtra("EXTRA_USER_ROLE", userRole)
-                putExtra("EXTRA_USER_KELAS", userKelas)
             }
             startActivity(intent)
         }
@@ -146,18 +154,14 @@ class BerandaActivity : AppCompatActivity() {
         grid.menuAbsen.ivMenuIcon.setImageResource(R.drawable.ic_absen)
         grid.menuAbsen.tvMenuLabel.text = "Absen"
         grid.menuAbsen.root.setOnClickListener {
-            if (db.sudahAbsenHariIni(userId)) {
-                Toast.makeText(this, "Kamu sudah absen hari ini", Toast.LENGTH_SHORT).show()
-            } else {
-                val berhasil = db.simpanAbsen(userId, "manual")
-                if (berhasil) {
-                    Toast.makeText(this, "Absen manual berhasil, $userNama!", Toast.LENGTH_SHORT).show()
-                    setupAbsenHariIni()
-                    setupCardKehadiran()
-                } else {
-                    Toast.makeText(this, "Absen gagal", Toast.LENGTH_SHORT).show()
-                }
+            val intent = Intent(this, AbsenActivity::class.java).apply {
+                putExtra("EXTRA_USER_ID", userId)
+                putExtra("EXTRA_USER_NIS", userNis)
+                putExtra("EXTRA_USER_NAMA", userNama)
+                putExtra("EXTRA_USER_ROLE", userRole)
+                putExtra("EXTRA_USER_KELAS", userKelas)
             }
+            startActivity(intent)
         }
 
         grid.menuKalender.ivMenuIcon.setImageResource(R.drawable.ic_kalendar)
@@ -182,6 +186,15 @@ class BerandaActivity : AppCompatActivity() {
         }
 
         nav.btnFingerprint.setOnClickListener {
+            if (db.isHariLibur()) {
+                Toast.makeText(
+                    this,
+                    "Absen hanya bisa dilakukan Senin - Jumat",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
             if (db.sudahAbsenHariIni(userId)) {
                 Toast.makeText(this, "Kamu sudah absen hari ini", Toast.LENGTH_SHORT).show()
             } else {

@@ -1,102 +1,159 @@
 package com.example.absensisiswaproto.ui.pelajaran
 
-import android.content.Intent
+import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.absensisiswaproto.data.local.DatabaseHelper
-import com.example.absensisiswaproto.data.model.Pelajaran
+import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.databinding.ActivityPelajaranBinding
-import com.example.absensisiswaproto.ui.beranda.BerandaActivity
-import com.example.absensisiswaproto.ui.profile.ProfileActivity
+import eightbitlab.com.blurview.BlurView
+import eightbitlab.com.blurview.RenderScriptBlur
 
 class PelajaranActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityPelajaranBinding
-    private lateinit var db: DatabaseHelper
 
-    private var userId: Int = 0
-    private var userNis: String = ""
-    private var userNama: String = ""
-    private var userRole: String = ""
-    private var userKelas: String = ""
+    private var currentStage: String = "X"
+
+    private val majors = listOf("DKV", "RPL", "TKJ", "AN", "PSPT", "PS")
+    private val locals = listOf("1", "2", "3")
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPelajaranBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        db = DatabaseHelper(this)
+        binding.overlayJadwal.root.visibility = View.GONE
 
-        userId = intent.getIntExtra("EXTRA_USER_ID", 0)
-        userNis = intent.getStringExtra("EXTRA_USER_NIS") ?: ""
-        userNama = intent.getStringExtra("EXTRA_USER_NAMA") ?: "Siswa"
-        userRole = intent.getStringExtra("EXTRA_USER_ROLE") ?: "siswa"
-        userKelas = intent.getStringExtra("EXTRA_USER_KELAS") ?: "-"
+        setupBlurEffect()
+        setupHeader()
+        setupTabs()
+        setupSearch()
+        setupBottomNav()
+        setupOverlayJadwal()
 
-        binding.tvTitleInfoKelas.text = "Jadwal Pelajaran - $userKelas"
+        renderKelasList()
+    }
 
+    private fun setupBlurEffect() {
+        val blurView: BlurView = binding.overlayJadwal.blurView
+        val decorView = window.decorView
+        val rootView = decorView.findViewById<ViewGroup>(android.R.id.content)
+        val windowBackground: Drawable = decorView.background
+
+        blurView.setupWith(rootView, RenderScriptBlur(this))
+            .setFrameClearDrawable(windowBackground)
+            .setBlurRadius(20f)
+            .setBlurAutoUpdate(true)
+    }
+
+    private fun setupHeader() {
         binding.btnBack.setOnClickListener {
             finish()
         }
-
-        setupListPelajaran()
-        setupBottomNav()
     }
 
-    private fun setupListPelajaran() {
-        val listPelajaran = listOf(
-            Pelajaran("Pemrograman Web & Mobile", "Budi Santoso, S.Kom", "Lab Komputer 1", "07:30 - 09:30"),
-            Pelajaran("Matematika Terapan", "Dra. Siti Aminah", "Ruang 12", "09:45 - 11:15"),
-            Pelajaran("Bahasa Indonesia", "Drs. Ahmad Dahlan", "Ruang 12", "11:15 - 12:30"),
-            Pelajaran("Basis Data & Cloud", "Rizky Pratama, M.T.", "Lab Komputer 2", "13:00 - 15:00")
+    private fun setupTabs() {
+        binding.tabX.setOnClickListener { switchStage("X") }
+        binding.tabXI.setOnClickListener { switchStage("XI") }
+        binding.tabXII.setOnClickListener { switchStage("XII") }
+    }
+
+    private fun switchStage(stage: String) {
+        currentStage = stage
+
+        binding.tabX.setBackgroundResource(
+            if (stage == "X") R.drawable.bg_tab_active else R.drawable.bg_tab_inactive
+        )
+        binding.tabX.setTextColor(
+            if (stage == "X") getColor(R.color.color_white) else getColor(R.color.color_primary_dark)
         )
 
-        binding.rvPelajaran.layoutManager = LinearLayoutManager(this)
-        binding.rvPelajaran.adapter = PelajaranAdapter(listPelajaran)
+        binding.tabXI.setBackgroundResource(
+            if (stage == "XI") R.drawable.bg_tab_active else R.drawable.bg_tab_inactive
+        )
+        binding.tabXI.setTextColor(
+            if (stage == "XI") getColor(R.color.color_white) else getColor(R.color.color_primary_dark)
+        )
+
+        binding.tabXII.setBackgroundResource(
+            if (stage == "XII") R.drawable.bg_tab_active else R.drawable.bg_tab_inactive
+        )
+        binding.tabXII.setTextColor(
+            if (stage == "XII") getColor(R.color.color_white) else getColor(R.color.color_primary_dark)
+        )
+
+        renderKelasList()
+    }
+
+    private fun setupSearch() {
+        binding.etSearch.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                renderKelasList(s?.toString() ?: "")
+            }
+            override fun afterTextChanged(s: android.text.Editable?) {}
+        })
+    }
+
+    private fun renderKelasList(filter: String = "") {
+        val container = binding.containerKelas
+        container.removeAllViews()
+
+        val list = mutableListOf<String>()
+        for (major in majors) {
+            for (local in locals) {
+                val kelas = "$currentStage $major $local"
+                if (filter.isEmpty() || kelas.contains(filter, ignoreCase = true)) {
+                    list.add(kelas)
+                }
+            }
+        }
+
+        val inflater = LayoutInflater.from(this)
+        for (namaKelas in list) {
+            val item = inflater.inflate(R.layout.item_kelas, container, false)
+            item.findViewById<TextView>(R.id.tvNamaKelas).text = namaKelas
+
+            item.setOnClickListener {
+                bukaJadwal(namaKelas)
+            }
+
+            container.addView(item)
+        }
+    }
+
+    private fun bukaJadwal(namaKelas: String) {
+        binding.overlayJadwal.root.visibility = View.VISIBLE
+        binding.overlayJadwal.root.bringToFront()
+        Toast.makeText(this, "Jadwal $namaKelas", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun setupOverlayJadwal() {
+        binding.overlayJadwal.btnTutupJadwal.setOnClickListener {
+            binding.overlayJadwal.root.visibility = View.GONE
+        }
     }
 
     private fun setupBottomNav() {
         val nav = binding.bottomNav
 
         nav.btnHome.setOnClickListener {
-            val intent = Intent(this, BerandaActivity::class.java).apply {
-                putExtra("EXTRA_USER_ID", userId)
-                putExtra("EXTRA_USER_NIS", userNis)
-                putExtra("EXTRA_USER_NAMA", userNama)
-                putExtra("EXTRA_USER_ROLE", userRole)
-                putExtra("EXTRA_USER_KELAS", userKelas)
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            }
-            startActivity(intent)
             finish()
         }
 
         nav.btnFingerprint.setOnClickListener {
-            if (db.sudahAbsenHariIni(userId)) {
-                Toast.makeText(this, "Kamu sudah absen hari ini", Toast.LENGTH_SHORT).show()
-            } else {
-                val berhasil = db.simpanAbsen(userId, "fingerprint")
-                if (berhasil) {
-                    Toast.makeText(this, "Absen berhasil, $userNama!", Toast.LENGTH_SHORT).show()
-                } else {
-                    Toast.makeText(this, "Absen gagal", Toast.LENGTH_SHORT).show()
-                }
-            }
+            Toast.makeText(this, "Absen via fingerprint", Toast.LENGTH_SHORT).show()
         }
 
         nav.btnProfile.setOnClickListener {
-            val intent = Intent(this, ProfileActivity::class.java).apply {
-                putExtra("EXTRA_USER_ID", userId)
-                putExtra("EXTRA_USER_NIS", userNis)
-                putExtra("EXTRA_USER_NAMA", userNama)
-                putExtra("EXTRA_USER_ROLE", userRole)
-                putExtra("EXTRA_USER_KELAS", userKelas)
-                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
-            }
-            startActivity(intent)
-            finish()
+            Toast.makeText(this, "Sudah di Pelajaran", Toast.LENGTH_SHORT).show()
         }
     }
 }

@@ -1,77 +1,82 @@
 package com.example.absensisiswaproto.ui.riwayat
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.data.model.Absensi
-import com.example.absensisiswaproto.databinding.ItemRiwayatAbsenBinding
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class RiwayatAdapter(private val list: List<Absensi>) :
-    RecyclerView.Adapter<RiwayatAdapter.ViewHolder>() {
+class RiwayatAdapter(
+    private var list: List<Absensi>
+) : RecyclerView.Adapter<RiwayatAdapter.ViewHolder>() {
 
-    class ViewHolder(val binding: ItemRiwayatAbsenBinding) :
-        RecyclerView.ViewHolder(binding.root)
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val layoutStatusBadge: LinearLayout = view.findViewById(R.id.layoutStatusBadge)
+        val ivItemStatusIcon: ImageView = view.findViewById(R.id.ivItemStatusIcon)
+        val tvItemStatusLabel: TextView = view.findViewById(R.id.tvItemStatusLabel)
+        val tvItemTanggal: TextView = view.findViewById(R.id.tvItemTanggal)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemRiwayatAbsenBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return ViewHolder(binding)
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_riwayat_absen, parent, false)
+        return ViewHolder(view)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val item = list[position]
+        val statusLower = item.status.lowercase(Locale.getDefault())
+
+        when (statusLower) {
+            "hadir" -> {
+                holder.layoutStatusBadge.setBackgroundResource(R.drawable.bg_status_hadir_pill)
+                holder.ivItemStatusIcon.setImageResource(R.drawable.ic_check)
+                holder.tvItemStatusLabel.text = "Hadir"
+            }
+            "telat" -> {
+                holder.layoutStatusBadge.setBackgroundResource(R.drawable.bg_status_telat_pill)
+                holder.ivItemStatusIcon.setImageResource(R.drawable.ic_warning)
+                holder.tvItemStatusLabel.text = "Telat"
+            }
+            "absen", "alpha" -> {
+                holder.layoutStatusBadge.setBackgroundResource(R.drawable.bg_status_alpha_pill)
+                holder.ivItemStatusIcon.setImageResource(R.drawable.ic_remove)
+                holder.tvItemStatusLabel.text = "Absen"
+            }
+            else -> {
+                holder.layoutStatusBadge.setBackgroundResource(R.drawable.bg_status_hadir_pill)
+                holder.ivItemStatusIcon.setImageResource(R.drawable.ic_check)
+                holder.tvItemStatusLabel.text = "Hadir"
+            }
+        }
+
+        holder.tvItemTanggal.text = formatTanggal(item.tanggal)
+    }
+
+    private fun formatTanggal(tanggal: String): String {
+        return try {
+            val input = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            val output = SimpleDateFormat("EEEE dd MMM yyyy", Locale("id", "ID"))
+            val date = input.parse(tanggal)
+            if (date != null) {
+                val formatted = output.format(date)
+                formatted.replaceFirstChar { it.uppercase() }
+            } else tanggal
+        } catch (e: Exception) {
+            tanggal
+        }
     }
 
     override fun getItemCount(): Int = list.size
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = list[position]
-        val binding = holder.binding
-
-        val formattedTanggal = try {
-            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-            val date = inputFormat.parse(item.tanggal)
-            if (date != null) {
-                val outputFormat = SimpleDateFormat("EEEE dd MMM yyyy", Locale("id", "ID"))
-                outputFormat.format(date)
-            } else {
-                item.tanggal
-            }
-        } catch (e: Exception) {
-            item.tanggal
-        }
-
-        binding.tvItemTanggal.text = formattedTanggal
-
-        val statusLower = item.status.lowercase(Locale.getDefault())
-        when {
-            statusLower == "hadir" -> {
-                binding.layoutStatusBadge.setBackgroundResource(R.drawable.bg_status_hadir_pill)
-                binding.ivItemStatusIcon.setImageResource(R.drawable.ic_check)
-                binding.tvItemStatusLabel.text = "Hadir"
-            }
-            statusLower == "alpha" || statusLower == "absen" -> {
-                binding.layoutStatusBadge.setBackgroundResource(R.drawable.bg_status_alpha_pill)
-                binding.ivItemStatusIcon.setImageResource(R.drawable.ic_remove)
-                binding.tvItemStatusLabel.text = "Alpha"
-            }
-            statusLower == "telat" -> {
-                binding.layoutStatusBadge.setBackgroundResource(R.drawable.bg_status_telat_pill)
-                binding.ivItemStatusIcon.setImageResource(R.drawable.ic_warning)
-                binding.tvItemStatusLabel.text = "Telat"
-            }
-            statusLower == "izin" || statusLower == "sakit" -> {
-                binding.layoutStatusBadge.setBackgroundResource(R.drawable.bg_status_telat_pill)
-                binding.ivItemStatusIcon.setImageResource(R.drawable.ic_warning)
-                binding.tvItemStatusLabel.text = "Izin"
-            }
-            else -> {
-                binding.layoutStatusBadge.setBackgroundResource(R.drawable.bg_status_neutral_pill)
-                binding.ivItemStatusIcon.setImageResource(R.drawable.ic_check)
-                binding.tvItemStatusLabel.text = "-"
-            }
-        }
+    fun updateData(newList: List<Absensi>) {
+        list = newList
+        notifyDataSetChanged()
     }
 }

@@ -9,8 +9,7 @@
     android:focusable="true"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="24dp"
-    android:visibility="gone">
+    android:padding="24dp">
 
     <LinearLayout
         android:layout_width="match_parent"

@@ -2,54 +2,58 @@ package com.example.absensisiswaproto.ui.kalender
 
 import android.graphics.Color
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.absensisiswaproto.databinding.ItemCalendarDayBinding
+import com.example.absensisiswaproto.R
 
-data class DayItem(
-    val dayNumber: String,
-    val isRed: Boolean = false,
-    val isGreen: Boolean = false
-)
+class CalendarDaysAdapter(
+    private var items: List<DayItem>
+) : RecyclerView.Adapter<CalendarDaysAdapter.ViewHolder>() {
 
-class CalendarDaysAdapter(private val daysList: List<DayItem>) :
-    RecyclerView.Adapter<CalendarDaysAdapter.ViewHolder>() {
-
-    class ViewHolder(val binding: ItemCalendarDayBinding) :
-        RecyclerView.ViewHolder(binding.root)
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val binding = ItemCalendarDayBinding.inflate(
-            LayoutInflater.from(parent.context),
-            parent,
-            false
-        )
-        return ViewHolder(binding)
+    inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        val tvDay: TextView = view.findViewById(R.id.tvDay)
     }
 
-    override fun getItemCount(): Int = daysList.size
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = LayoutInflater.from(parent.context)
+            .inflate(R.layout.item_calendar_day, parent, false)
+        return ViewHolder(view)
+    }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = daysList[position]
-        val binding = holder.binding
+        val item = items[position]
 
-        binding.tvDayNumber.text = item.dayNumber
-        binding.tvDayNumber.background = null
-
-        if (item.dayNumber.isEmpty()) {
+        if (item.day.isEmpty()) {
+            holder.tvDay.text = ""
+            holder.tvDay.setBackgroundResource(0)
+            holder.tvDay.setTextColor(Color.TRANSPARENT)
             return
         }
 
+        holder.tvDay.text = item.day
+
         when {
-            item.isRed -> {
-                binding.tvDayNumber.setTextColor(Color.parseColor("#FF1744"))
-            }
             item.isGreen -> {
-                binding.tvDayNumber.setTextColor(Color.parseColor("#00E676"))
+                holder.tvDay.setBackgroundResource(R.drawable.bg_day_upacara)
+                holder.tvDay.setTextColor(Color.WHITE)
+            }
+            item.isRed -> {
+                holder.tvDay.setBackgroundResource(R.drawable.bg_day_libur)
+                holder.tvDay.setTextColor(Color.WHITE)
             }
             else -> {
-                binding.tvDayNumber.setTextColor(Color.WHITE)
+                holder.tvDay.setBackgroundResource(0)
+                holder.tvDay.setTextColor(Color.WHITE)
             }
         }
+    }
+
+    override fun getItemCount(): Int = items.size
+
+    fun updateData(newItems: List<DayItem>) {
+        items = newItems
+        notifyDataSetChanged()
     }
 }
