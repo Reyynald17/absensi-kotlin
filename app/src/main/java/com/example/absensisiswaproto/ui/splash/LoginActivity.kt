@@ -17,6 +17,7 @@ import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.data.model.User
 import com.example.absensisiswaproto.databinding.ActivityLoginBinding
 import com.example.absensisiswaproto.ui.beranda.BerandaActivity
+import com.example.absensisiswaproto.ui.guru.WelcomeGuruActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -33,11 +34,7 @@ class LoginActivity : AppCompatActivity() {
         setupButtonPressEffect()
 
         binding.tvAdmin.setOnClickListener {
-            Toast.makeText(
-                this,
-                "Fitur login admin belum tersedia",
-                Toast.LENGTH_SHORT
-            ).show()
+            startActivity(Intent(this, WelcomeGuruActivity::class.java))
         }
 
         binding.btnSubmit.setOnClickListener {

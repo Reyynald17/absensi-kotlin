@@ -10,4 +10,9 @@
     <color name="color_white">#FFFFFF</color>
     <color name="color_black">#000000</color>
     <color name="color_light_blue">#0099ff</color>
+    <color name="color_guru_start">#0AE09C</color>
+    <color name="color_guru_end">#1E8827</color>
+    <color name="color_guru_primary">#1E8827</color>
+    <color name="color_guru_accent">#E74C3C</color>
+    <color name="color_guru_text">#1E8827</color>
 </resources>

@@ -5,6 +5,7 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.absensisiswaproto.data.model.Absensi
+import com.example.absensisiswaproto.data.model.Guru
 import com.example.absensisiswaproto.data.model.User
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -16,7 +17,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "absensi.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 7
 
         const val TABLE_USER = "users"
         const val COL_ID = "id"
@@ -33,6 +34,15 @@ class DatabaseHelper(context: Context) :
         const val COL_ABSEN_JAM = "jam"
         const val COL_ABSEN_STATUS = "status"
         const val COL_ABSEN_METODE = "metode"
+
+        const val TABLE_GURU = "guru"
+        const val COL_GURU_ID = "id"
+        const val COL_GURU_NIP = "nip"
+        const val COL_GURU_NAMA = "nama"
+        const val COL_GURU_KELAS_MAPEL = "kelas_mapel"
+        const val COL_GURU_NO_TELP = "no_telp"
+        const val COL_GURU_EMAIL = "email"
+        const val COL_GURU_STATUS = "status"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -58,12 +68,26 @@ class DatabaseHelper(context: Context) :
             )
         """.trimIndent())
 
+        db.execSQL("""
+            CREATE TABLE $TABLE_GURU (
+                $COL_GURU_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COL_GURU_NIP TEXT UNIQUE NOT NULL,
+                $COL_GURU_NAMA TEXT NOT NULL,
+                $COL_GURU_KELAS_MAPEL TEXT NOT NULL,
+                $COL_GURU_NO_TELP TEXT NOT NULL,
+                $COL_GURU_EMAIL TEXT NOT NULL,
+                $COL_GURU_STATUS TEXT NOT NULL
+            )
+        """.trimIndent())
+
         seedData(db)
+        seedGuru(db)
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USER")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_ABSEN")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_GURU")
         onCreate(db)
     }
 
@@ -71,6 +95,23 @@ class DatabaseHelper(context: Context) :
         insertUser(db, "12345", "Jacobi Ambasuki", "ngawi123", "siswa", "XII RPL 3")
         insertUser(db, "67890", "Arata Naoko", "sukiaselilohyah", "siswa", "XII FM 2")
         insertUser(db, "admin01", "Guru", "admin123", "admin", "XI PSPT 1")
+        insertUser(db, "11111", "Putri Ananda", "putri123", "siswa", "X DKV 1")
+        insertUser(db, "22222", "Putra Wijaya", "putra123", "siswa", "X DKV 1")
+        insertUser(db, "33333", "Nabila Safitri", "nabila123", "siswa", "X DKV 1")
+        insertUser(db, "44444", "Rizki Pratama", "rizki123", "siswa", "X DKV 1")
+        insertUser(db, "55555", "Salsa Aulia", "salsa123", "siswa", "X DKV 1")
+    }
+
+    private fun seedGuru(db: SQLiteDatabase) {
+        insertGuru(
+            db = db,
+            nip = "6767",
+            nama = "Fuad Nasir Shapiro",
+            kelasMapel = "XII RPL 3",
+            noTelp = "081234567890",
+            email = "fuad@sekolah.id",
+            status = "verified"
+        )
     }
 
     private fun insertUser(
@@ -89,6 +130,26 @@ class DatabaseHelper(context: Context) :
             put(COL_KELAS, kelas)
         }
         db.insert(TABLE_USER, null, values)
+    }
+
+    private fun insertGuru(
+        db: SQLiteDatabase,
+        nip: String,
+        nama: String,
+        kelasMapel: String,
+        noTelp: String,
+        email: String,
+        status: String
+    ) {
+        val values = ContentValues().apply {
+            put(COL_GURU_NIP, nip)
+            put(COL_GURU_NAMA, nama)
+            put(COL_GURU_KELAS_MAPEL, kelasMapel)
+            put(COL_GURU_NO_TELP, noTelp)
+            put(COL_GURU_EMAIL, email)
+            put(COL_GURU_STATUS, status)
+        }
+        db.insert(TABLE_GURU, null, values)
     }
 
     fun login(nis: String, password: String): User? {
@@ -111,6 +172,185 @@ class DatabaseHelper(context: Context) :
         }
         cursor.close()
         return user
+    }
+
+    fun loginGuru(nip: String, nama: String): Guru? {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_GURU WHERE $COL_GURU_NIP = ? AND $COL_GURU_NAMA = ? AND $COL_GURU_STATUS = 'verified'",
+            arrayOf(nip, nama)
+        )
+
+        var guru: Guru? = null
+        if (cursor.moveToFirst()) {
+            guru = Guru(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_GURU_ID)),
+                nip = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_NIP)),
+                nama = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_NAMA)),
+                kelasMapel = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_KELAS_MAPEL)),
+                noTelp = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_NO_TELP)),
+                email = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_EMAIL)),
+                status = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_STATUS))
+            )
+        }
+        cursor.close()
+        return guru
+    }
+
+    fun cekGuruExist(nip: String): Boolean {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_GURU WHERE $COL_GURU_NIP = ?",
+            arrayOf(nip)
+        )
+        val exist = cursor.count > 0
+        cursor.close()
+        return exist
+    }
+
+    fun registerGuru(
+        nip: String,
+        nama: String,
+        noTelp: String,
+        email: String
+    ): Boolean {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COL_GURU_NIP, nip)
+            put(COL_GURU_NAMA, nama)
+            put(COL_GURU_KELAS_MAPEL, "-")
+            put(COL_GURU_NO_TELP, noTelp)
+            put(COL_GURU_EMAIL, email)
+            put(COL_GURU_STATUS, "pending")
+        }
+        val result = db.insert(TABLE_GURU, null, values)
+        return result != -1L
+    }
+
+    fun getPendingGuru(): List<Guru> {
+        val list = mutableListOf<Guru>()
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_GURU WHERE $COL_GURU_STATUS = 'pending'",
+            null
+        )
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast) {
+                list.add(
+                    Guru(
+                        id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_GURU_ID)),
+                        nip = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_NIP)),
+                        nama = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_NAMA)),
+                        kelasMapel = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_KELAS_MAPEL)),
+                        noTelp = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_NO_TELP)),
+                        email = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_EMAIL)),
+                        status = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_STATUS))
+                    )
+                )
+                cursor.moveToNext()
+            }
+        }
+        cursor.close()
+        return list
+    }
+
+    fun verifikasiGuru(guruId: Int, kelasMapel: String): Boolean {
+        val db = writableDatabase
+        val values = ContentValues().apply {
+            put(COL_GURU_KELAS_MAPEL, kelasMapel)
+            put(COL_GURU_STATUS, "verified")
+        }
+        val result = db.update(
+            TABLE_GURU,
+            values,
+            "$COL_GURU_ID = ?",
+            arrayOf(guruId.toString())
+        )
+        return result > 0
+    }
+
+    fun tolakGuru(guruId: Int): Boolean {
+        val db = writableDatabase
+        val result = db.delete(
+            TABLE_GURU,
+            "$COL_GURU_ID = ?",
+            arrayOf(guruId.toString())
+        )
+        return result > 0
+    }
+
+    fun getSiswaByKelas(kelas: String): List<User> {
+        val list = mutableListOf<User>()
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_USER WHERE $COL_KELAS = ? AND $COL_ROLE = 'siswa' ORDER BY $COL_NAMA ASC",
+            arrayOf(kelas)
+        )
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast) {
+                list.add(
+                    User(
+                        id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID)),
+                        nis = cursor.getString(cursor.getColumnIndexOrThrow(COL_NIS)),
+                        nama = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAMA)),
+                        password = cursor.getString(cursor.getColumnIndexOrThrow(COL_PASSWORD)),
+                        role = cursor.getString(cursor.getColumnIndexOrThrow(COL_ROLE)),
+                        kelas = cursor.getString(cursor.getColumnIndexOrThrow(COL_KELAS))
+                    )
+                )
+                cursor.moveToNext()
+            }
+        }
+        cursor.close()
+        return list
+    }
+
+    fun getAbsensiByUserTanggal(userId: Int, tanggal: String): Absensi? {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_ABSEN WHERE $COL_ABSEN_USER_ID = ? AND $COL_ABSEN_TANGGAL = ? LIMIT 1",
+            arrayOf(userId.toString(), tanggal)
+        )
+        var absensi: Absensi? = null
+        if (cursor.moveToFirst()) {
+            absensi = Absensi(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ABSEN_ID)),
+                userId = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ABSEN_USER_ID)),
+                tanggal = cursor.getString(cursor.getColumnIndexOrThrow(COL_ABSEN_TANGGAL)),
+                jam = cursor.getString(cursor.getColumnIndexOrThrow(COL_ABSEN_JAM)),
+                status = cursor.getString(cursor.getColumnIndexOrThrow(COL_ABSEN_STATUS)),
+                metode = cursor.getString(cursor.getColumnIndexOrThrow(COL_ABSEN_METODE))
+            )
+        }
+        cursor.close()
+        return absensi
+    }
+
+    fun updateStatusAbsensi(userId: Int, tanggal: String, status: String): Boolean {
+        val db = writableDatabase
+        val existing = getAbsensiByUserTanggal(userId, tanggal)
+
+        return if (existing != null) {
+            val values = ContentValues().apply {
+                put(COL_ABSEN_STATUS, status)
+            }
+            val result = db.update(
+                TABLE_ABSEN,
+                values,
+                "$COL_ABSEN_USER_ID = ? AND $COL_ABSEN_TANGGAL = ?",
+                arrayOf(userId.toString(), tanggal)
+            )
+            result > 0
+        } else {
+            val values = ContentValues().apply {
+                put(COL_ABSEN_USER_ID, userId)
+                put(COL_ABSEN_TANGGAL, tanggal)
+                put(COL_ABSEN_JAM, "-")
+                put(COL_ABSEN_STATUS, status)
+                put(COL_ABSEN_METODE, "manual")
+            }
+            db.insert(TABLE_ABSEN, null, values) != -1L
+        }
     }
 
     fun simpanAbsen(userId: Int, metode: String): Boolean {

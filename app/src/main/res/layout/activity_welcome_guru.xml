@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_white">
+
+    <FrameLayout
+        android:id="@+id/headerGuru"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@drawable/bg_gradient_guru"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageView
+            android:layout_width="205dp"
+            android:layout_height="205dp"
+            android:layout_gravity="top|end"
+            android:contentDescription="@null"
+            android:scaleType="centerCrop"
+            android:src="@drawable/batik_guru"
+            android:translationX="50dp"
+            android:translationY="-50dp" />
+
+        <ImageView
+            android:layout_width="205dp"
+            android:layout_height="205dp"
+            android:layout_gravity="bottom|start"
+            android:contentDescription="@null"
+            android:rotation="180"
+            android:scaleType="centerCrop"
+            android:src="@drawable/batik_guru"
+            android:translationX="-50dp"
+            android:translationY="50dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="60dp">
+
+            <ImageView
+                android:id="@+id/ivLogoGuru"
+                android:layout_width="80dp"
+                android:layout_height="100dp"
+                android:contentDescription="@null"
+                android:src="@drawable/prov" />
+
+            <TextView
+                android:id="@+id/tvMotto"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="DISIPLIN • KOMPETEN • BERPRESTASI"
+                android:textColor="@color/color_white"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvWelcomeTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="40dp"
+                android:text="Selamat Datang"
+                android:textColor="@color/color_white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvWelcomeSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Di Aplikasi Absensi Guru"
+                android:textColor="@color/color_white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvWelcomeDesc"
+                android:layout_width="260dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="14dp"
+                android:gravity="center"
+                android:text="Pantau kehadiran siswa dengan mudah dan cepat"
+                android:textColor="@color/color_white"
+                android:textSize="13sp" />
+
+            <ImageView
+                android:id="@+id/ivGuruFigure"
+                android:layout_width="220dp"
+                android:layout_height="280dp"
+                android:layout_marginTop="20dp"
+                android:contentDescription="@null"
+                android:scaleType="fitCenter"
+                android:src="@drawable/guru" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cardLoginOptions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="24dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="40dp"
+            android:background="@drawable/bg_card_white_guru"
+            android:elevation="8dp"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <Button
+                android:id="@+id/btnLoginGuru"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="@drawable/bg_button_guru"
+                android:text="Login"
+                android:textAllCaps="false"
+                android:textColor="@color/color_white"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@null" />
+
+            <Button
+                android:id="@+id/btnDaftarGuru"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/bg_button_outline_guru"
+                android:text="Daftar"
+                android:textAllCaps="false"
+                android:textColor="@color/color_guru_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@null" />
+
+            <TextView
+                android:id="@+id/tvLoginOperator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="14dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:padding="6dp"
+                android:text="Login Operator"
+                android:textColor="@color/color_guru_accent"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

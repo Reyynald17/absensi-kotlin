@@ -60,8 +60,34 @@
             android:name=".ui.absen.ScanAbsenActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
         <activity
-            android:name=".ui.pelajaran.PelajaranActivity"
+            android:name=".ui.guru.WelcomeGuruActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.LoginGuruActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.RegisterGuruActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.BerandaGuruActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.AbsensiSiswaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.DetailSiswaActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 
