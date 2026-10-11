@@ -18,13 +18,35 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        ndk {
+            abiFilters += listOf("armeabi-v7a", "arm64-v8a")
+        }
     }
 
     buildTypes {
         release {
-            optimization {
-                enable = false
-            }
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += listOf(
+                "/META-INF/{AL2.0,LGPL2.1}",
+                "/META-INF/DEPENDENCIES",
+                "/META-INF/LICENSE*",
+                "/META-INF/NOTICE*",
+                "**/*.kotlin_metadata",
+                "**/*.kotlin_module",
+                "DebugProbesKt.bin",
+                "META-INF/*.version"
+            )
         }
     }
     compileOptions {
