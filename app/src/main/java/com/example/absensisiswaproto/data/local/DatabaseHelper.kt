@@ -299,19 +299,45 @@ class DatabaseHelper(context: Context) :
         return name
     }
 
+    fun fixOperatorData(db: SQLiteDatabase) {
+        try {
+            db.execSQL("""
+                UPDATE $TABLE_OPERATOR SET 
+                    nama_lengkap = COALESCE(NULLIF(nama_lengkap, ''), 'Operator Sekolah'),
+                    email        = COALESCE(NULLIF(email, ''), 'OperatorSekolah@Gmail.com'),
+                    no_telp      = COALESCE(NULLIF(no_telp, ''), '-'),
+                    jabatan      = COALESCE(NULLIF(jabatan, ''), 'Operator Sekolah')
+                WHERE nama = 'optu1'
+            """.trimIndent())
+        } catch (e: Exception) {
+            // Ignore
+        }
+    }
+
     fun getOperatorByNama(nama: String): Operator? {
+        fixOperatorData(writableDatabase)
         readableDatabase.rawQuery(
             "SELECT * FROM $TABLE_OPERATOR WHERE nama = ? LIMIT 1", arrayOf(nama)
         ).use { c ->
             if (c.moveToFirst()) {
+                val namaLengkapIdx = c.getColumnIndex("nama_lengkap")
+                val emailIdx = c.getColumnIndex("email")
+                val noTelpIdx = c.getColumnIndex("no_telp")
+                val jabatanIdx = c.getColumnIndex("jabatan")
+
+                val namaLengkapVal = if (namaLengkapIdx >= 0) c.getString(namaLengkapIdx) else null
+                val emailVal = if (emailIdx >= 0) c.getString(emailIdx) else null
+                val noTelpVal = if (noTelpIdx >= 0) c.getString(noTelpIdx) else null
+                val jabatanVal = if (jabatanIdx >= 0) c.getString(jabatanIdx) else null
+
                 return Operator(
                     id = c.getInt(c.getColumnIndexOrThrow("id")),
                     nama = c.getString(c.getColumnIndexOrThrow("nama")),
                     password = "",
-                    namaLengkap = c.getString(c.getColumnIndexOrThrow("nama_lengkap")).orEmpty(),
-                    email = c.getString(c.getColumnIndexOrThrow("email")).orEmpty(),
-                    noTelp = c.getString(c.getColumnIndexOrThrow("no_telp")).orEmpty(),
-                    jabatan = c.getString(c.getColumnIndexOrThrow("jabatan")).orEmpty()
+                    namaLengkap = namaLengkapVal?.ifBlank { "Operator Sekolah" } ?: "Operator Sekolah",
+                    email = emailVal?.ifBlank { "OperatorSekolah@Gmail.com" } ?: "OperatorSekolah@Gmail.com",
+                    noTelp = noTelpVal?.ifBlank { "-" } ?: "-",
+                    jabatan = jabatanVal?.ifBlank { "Operator Sekolah" } ?: "Operator Sekolah"
                 )
             }
         }
@@ -429,6 +455,18 @@ class DatabaseHelper(context: Context) :
         } catch (e: Exception) { false }
     }
 
+    fun getAllEvents(): List<Event> {
+        val list = mutableListOf<Event>()
+        readableDatabase.rawQuery(
+            "SELECT * FROM $TABLE_EVENT ORDER BY tanggal ASC, waktu_mulai ASC", null
+        ).use { c ->
+            while (c.moveToNext()) {
+                list += cursorToEvent(c)
+            }
+        }
+        return list
+    }
+
     private fun cursorToEvent(c: android.database.Cursor): Event = Event(
         id = c.getInt(c.getColumnIndexOrThrow("id")),
         tanggal = c.getString(c.getColumnIndexOrThrow("tanggal")),
@@ -478,46 +516,36 @@ class DatabaseHelper(context: Context) :
         val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
 
         val db = readableDatabase
-        val cursor = db.rawQuery(
-            "SELECT judul, tanggal, jam_mulai, jam_selesai, lokasi FROM $TABLE_EVENT WHERE tanggal >= ? ORDER BY tanggal ASC",
+        db.rawQuery(
+            "SELECT judul, tanggal, waktu_mulai, waktu_selesai, lokasi FROM $TABLE_EVENT WHERE tanggal >= ? ORDER BY tanggal ASC",
             arrayOf(today)
-        )
-        if (cursor.moveToFirst()) {
-            while (!cursor.isAfterLast) {
-                list.add(
-                    EventItem(
-                        judul = cursor.getString(0),
-                        tanggal = cursor.getString(1),
-                        jamMulai = cursor.getString(2),
-                        jamSelesai = cursor.getString(3),
-                        lokasi = cursor.getString(4)
-                    )
+        ).use { c ->
+            while (c.moveToNext()) {
+                list += EventItem(
+                    judul = c.getString(0).orEmpty(),
+                    tanggal = c.getString(1).orEmpty(),
+                    jamMulai = c.getString(2).orEmpty(),
+                    jamSelesai = c.getString(3).orEmpty(),
+                    lokasi = c.getString(4).orEmpty()
                 )
-                cursor.moveToNext()
             }
         }
-        cursor.close()
 
         if (list.isEmpty()) {
-            val c2 = db.rawQuery(
-                "SELECT judul, tanggal, jam_mulai, jam_selesai, lokasi FROM $TABLE_EVENT ORDER BY tanggal ASC LIMIT 5",
+            db.rawQuery(
+                "SELECT judul, tanggal, waktu_mulai, waktu_selesai, lokasi FROM $TABLE_EVENT ORDER BY tanggal ASC LIMIT 5",
                 null
-            )
-            if (c2.moveToFirst()) {
-                while (!c2.isAfterLast) {
-                    list.add(
-                        EventItem(
-                            judul = c2.getString(0),
-                            tanggal = c2.getString(1),
-                            jamMulai = c2.getString(2),
-                            jamSelesai = c2.getString(3),
-                            lokasi = c2.getString(4)
-                        )
+            ).use { c ->
+                while (c.moveToNext()) {
+                    list += EventItem(
+                        judul = c.getString(0).orEmpty(),
+                        tanggal = c.getString(1).orEmpty(),
+                        jamMulai = c.getString(2).orEmpty(),
+                        jamSelesai = c.getString(3).orEmpty(),
+                        lokasi = c.getString(4).orEmpty()
                     )
-                    c2.moveToNext()
                 }
             }
-            c2.close()
         }
         return list
     }

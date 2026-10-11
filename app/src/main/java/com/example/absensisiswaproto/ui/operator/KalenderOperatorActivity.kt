@@ -81,7 +81,9 @@ class KalenderOperatorActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNav() {
-        binding.bottomNav.btnNavAgenda.setOnClickListener { }
+        binding.bottomNav.btnNavAgenda.setOnClickListener {
+            startActivity(Intent(this, AgendaEventActivity::class.java))
+        }
         binding.bottomNav.btnNavBeranda.setOnClickListener {
             startActivity(
                 Intent(this, BerandaOperatorActivity::class.java)

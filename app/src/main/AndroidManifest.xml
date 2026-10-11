@@ -181,6 +181,11 @@
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 
+        <activity
+            android:name=".ui.operator.AgendaEventActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
     </application>
 
 </manifest>

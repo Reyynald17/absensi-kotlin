@@ -79,7 +79,8 @@ class DetailGuruVerifikasiActivity : AppCompatActivity() {
 
     private fun setupBottomNav() {
         binding.bottomNav.btnNavAgenda.setOnClickListener {
-            startActivity(Intent(this, KalenderOperatorActivity::class.java)); finish()
+            startActivity(Intent(this, AgendaEventActivity::class.java))
+            finish()
         }
         binding.bottomNav.btnNavBeranda.setOnClickListener {
             startActivity(Intent(this, BerandaOperatorActivity::class.java)

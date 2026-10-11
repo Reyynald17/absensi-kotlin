@@ -1,5 +1,6 @@
 package com.example.absensisiswaproto.ui.operator
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -41,7 +42,6 @@ class BerandaOperatorActivity : AppCompatActivity() {
         PressEffect.attach(binding.cardVerifikasi)
         PressEffect.attach(binding.cardKalender)
         PressEffect.attach(binding.btnMenu)
-        PressEffect.attach(binding.btnBell)
         PressEffect.attach(binding.btnNavAgenda)
         PressEffect.attach(binding.btnNavBeranda)
         PressEffect.attach(binding.btnNavProfil)
@@ -49,23 +49,20 @@ class BerandaOperatorActivity : AppCompatActivity() {
         binding.btnMenu.setOnClickListener {
             Toast.makeText(this, "Menu segera hadir", Toast.LENGTH_SHORT).show()
         }
-        binding.btnBell.setOnClickListener {
-            Toast.makeText(this, "Notifikasi segera hadir", Toast.LENGTH_SHORT).show()
-        }
         binding.cardVerifikasi.setOnClickListener {
-            Toast.makeText(this, "Verifikasi Guru segera hadir", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, VerifikasiGuruActivity::class.java))
         }
         binding.cardKalender.setOnClickListener {
-            Toast.makeText(this, "Kalender segera hadir", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, KalenderOperatorActivity::class.java))
         }
         binding.btnNavAgenda.setOnClickListener {
-            Toast.makeText(this, "Agenda Event segera hadir", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, AgendaEventActivity::class.java))
         }
         binding.btnNavBeranda.setOnClickListener {
             // Already on Beranda Operator
         }
         binding.btnNavProfil.setOnClickListener {
-            Toast.makeText(this, "Profil Operator segera hadir", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ProfileOperatorActivity::class.java))
         }
     }
 
