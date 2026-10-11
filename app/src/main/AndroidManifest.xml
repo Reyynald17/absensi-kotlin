@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -24,6 +27,11 @@
         </activity>
 
         <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
             android:name=".ui.login.LoginActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
@@ -32,30 +40,37 @@
             android:name=".ui.beranda.BerandaActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
         <activity
             android:name=".ui.profile.ProfileActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
         <activity
             android:name=".ui.riwayat.RiwayatActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
         <activity
             android:name=".ui.pelajaran.PelajaranActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
         <activity
             android:name=".ui.kalender.KalenderActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
         <activity
             android:name=".ui.notifikasi.NotificationActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
         <activity
             android:name=".ui.absen.AbsenActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
         <activity
             android:name=".ui.absen.ScanAbsenActivity"
             android:exported="false"
@@ -88,6 +103,56 @@
 
         <activity
             android:name=".ui.guru.DetailSiswaActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.RiwayatPeriodeActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.NotificationGuruActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.RekapKelasActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.RekapKelasDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.SearchKelasActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.SearchKelasDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.ScanQrActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.ProfileGuruActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.LoginOperatorActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.guru.BerandaOperatorActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 

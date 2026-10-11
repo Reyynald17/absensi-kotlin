@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 import com.example.absensisiswaproto.data.model.Absensi
 import com.example.absensisiswaproto.data.model.Guru
 import com.example.absensisiswaproto.data.model.User
+import com.example.absensisiswaproto.ui.guru.EventItem
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -17,7 +18,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "absensi.db"
-        private const val DATABASE_VERSION = 7
+        private const val DATABASE_VERSION = 10
 
         const val TABLE_USER = "users"
         const val COL_ID = "id"
@@ -43,6 +44,9 @@ class DatabaseHelper(context: Context) :
         const val COL_GURU_NO_TELP = "no_telp"
         const val COL_GURU_EMAIL = "email"
         const val COL_GURU_STATUS = "status"
+
+        const val TABLE_OPERATOR = "operator"
+        const val TABLE_EVENT = "event"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -80,6 +84,31 @@ class DatabaseHelper(context: Context) :
             )
         """.trimIndent())
 
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS $TABLE_OPERATOR (
+                $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COL_NAMA TEXT UNIQUE NOT NULL,
+                $COL_PASSWORD TEXT NOT NULL
+            )
+        """.trimIndent())
+
+        db.execSQL("INSERT OR IGNORE INTO $TABLE_OPERATOR ($COL_NAMA, $COL_PASSWORD) VALUES ('optu1', 'sukingawi')")
+
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS $TABLE_EVENT (
+                $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                judul TEXT NOT NULL,
+                tanggal TEXT NOT NULL,
+                jam_mulai TEXT NOT NULL,
+                jam_selesai TEXT NOT NULL,
+                lokasi TEXT NOT NULL
+            )
+        """.trimIndent())
+
+        db.execSQL("INSERT OR IGNORE INTO $TABLE_EVENT ($COL_ID, judul, tanggal, jam_mulai, jam_selesai, lokasi) VALUES (1, 'Rapat orang tua murid', '2026-10-06', '09:00', '12:00', 'Aula Sekolah')")
+        db.execSQL("INSERT OR IGNORE INTO $TABLE_EVENT ($COL_ID, judul, tanggal, jam_mulai, jam_selesai, lokasi) VALUES (2, 'Seminar SPMB', '2026-10-19', '09:00', '12:00', 'Aula Sekolah')")
+        db.execSQL("INSERT OR IGNORE INTO $TABLE_EVENT ($COL_ID, judul, tanggal, jam_mulai, jam_selesai, lokasi) VALUES (3, 'Pembuka P5', '2026-10-29', '08:30', '11:00', 'Aula Sekolah')")
+
         seedData(db)
         seedGuru(db)
     }
@@ -88,12 +117,14 @@ class DatabaseHelper(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS $TABLE_USER")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_ABSEN")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_GURU")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_OPERATOR")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_EVENT")
         onCreate(db)
     }
 
     private fun seedData(db: SQLiteDatabase) {
         insertUser(db, "12345", "Jacobi Ambasuki", "ngawi123", "siswa", "XII RPL 3")
-        insertUser(db, "67890", "Arata Naoko", "sukiaselilohyah", "siswa", "XII FM 2")
+        insertUser(db, "67890", "Arata Naoko", "sukiaselilohyah", "siswa", "XII DKV 2")
         insertUser(db, "admin01", "Guru", "admin123", "admin", "XI PSPT 1")
         insertUser(db, "11111", "Putri Ananda", "putri123", "siswa", "X DKV 1")
         insertUser(db, "22222", "Putra Wijaya", "putra123", "siswa", "X DKV 1")
@@ -181,6 +212,135 @@ class DatabaseHelper(context: Context) :
             arrayOf(nip, nama)
         )
 
+        var guru: Guru? = null
+        if (cursor.moveToFirst()) {
+            guru = Guru(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_GURU_ID)),
+                nip = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_NIP)),
+                nama = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_NAMA)),
+                kelasMapel = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_KELAS_MAPEL)),
+                noTelp = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_NO_TELP)),
+                email = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_EMAIL)),
+                status = cursor.getString(cursor.getColumnIndexOrThrow(COL_GURU_STATUS))
+            )
+        }
+        cursor.close()
+        return guru
+    }
+
+    fun loginOperator(nama: String, password: String): Boolean {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT $COL_ID FROM $TABLE_OPERATOR WHERE $COL_NAMA = ? AND $COL_PASSWORD = ? LIMIT 1",
+            arrayOf(nama, password)
+        )
+        val success = cursor.moveToFirst()
+        cursor.close()
+        return success
+    }
+
+    fun getOperatorByName(nama: String): String? {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT $COL_NAMA FROM $TABLE_OPERATOR WHERE $COL_NAMA = ? LIMIT 1",
+            arrayOf(nama)
+        )
+        var name: String? = null
+        if (cursor.moveToFirst()) {
+            name = cursor.getString(0)
+        }
+        cursor.close()
+        return name
+    }
+
+    fun countGuruTotal(): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_GURU", null)
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        return count
+    }
+
+    fun countGuruPending(): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_GURU WHERE $COL_GURU_STATUS = 'pending'", null)
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        return count
+    }
+
+    fun countGuruVerified(): Int {
+        val db = readableDatabase
+        val cursor = db.rawQuery("SELECT COUNT(*) FROM $TABLE_GURU WHERE $COL_GURU_STATUS = 'verified'", null)
+        var count = 0
+        if (cursor.moveToFirst()) {
+            count = cursor.getInt(0)
+        }
+        cursor.close()
+        return count
+    }
+
+    fun getEventMendatang(): List<EventItem> {
+        val list = mutableListOf<EventItem>()
+        val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT judul, tanggal, jam_mulai, jam_selesai, lokasi FROM $TABLE_EVENT WHERE tanggal >= ? ORDER BY tanggal ASC",
+            arrayOf(today)
+        )
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast) {
+                list.add(
+                    EventItem(
+                        judul = cursor.getString(0),
+                        tanggal = cursor.getString(1),
+                        jamMulai = cursor.getString(2),
+                        jamSelesai = cursor.getString(3),
+                        lokasi = cursor.getString(4)
+                    )
+                )
+                cursor.moveToNext()
+            }
+        }
+        cursor.close()
+
+        if (list.isEmpty()) {
+            val c2 = db.rawQuery(
+                "SELECT judul, tanggal, jam_mulai, jam_selesai, lokasi FROM $TABLE_EVENT ORDER BY tanggal ASC LIMIT 5",
+                null
+            )
+            if (c2.moveToFirst()) {
+                while (!c2.isAfterLast) {
+                    list.add(
+                        EventItem(
+                            judul = c2.getString(0),
+                            tanggal = c2.getString(1),
+                            jamMulai = c2.getString(2),
+                            jamSelesai = c2.getString(3),
+                            lokasi = c2.getString(4)
+                        )
+                    )
+                    c2.moveToNext()
+                }
+            }
+            c2.close()
+        }
+        return list
+    }
+
+    fun getGuruById(id: Int): Guru? {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_GURU WHERE $COL_GURU_ID = ? LIMIT 1",
+            arrayOf(id.toString())
+        )
         var guru: Guru? = null
         if (cursor.moveToFirst()) {
             guru = Guru(
@@ -305,6 +465,25 @@ class DatabaseHelper(context: Context) :
         return list
     }
 
+    fun getAllKelasWithCount(): List<Pair<String, Int>> {
+        val list = mutableListOf<Pair<String, Int>>()
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT $COL_KELAS, COUNT(*) FROM $TABLE_USER WHERE $COL_ROLE = 'siswa' GROUP BY $COL_KELAS ORDER BY $COL_KELAS ASC",
+            null
+        )
+        if (cursor.moveToFirst()) {
+            while (!cursor.isAfterLast) {
+                val kelas = cursor.getString(0)
+                val count = cursor.getInt(1)
+                list.add(kelas to count)
+                cursor.moveToNext()
+            }
+        }
+        cursor.close()
+        return list
+    }
+
     fun getAbsensiByUserTanggal(userId: Int, tanggal: String): Absensi? {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -327,6 +506,17 @@ class DatabaseHelper(context: Context) :
     }
 
     fun updateStatusAbsensi(userId: Int, tanggal: String, status: String): Boolean {
+        val parser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val date = parser.parse(tanggal)
+        if (date != null) {
+            val cal = Calendar.getInstance()
+            cal.time = date
+            val day = cal.get(Calendar.DAY_OF_WEEK)
+            if (day == Calendar.SATURDAY || day == Calendar.SUNDAY) {
+                return false
+            }
+        }
+
         val db = writableDatabase
         val existing = getAbsensiByUserTanggal(userId, tanggal)
 
@@ -436,5 +626,59 @@ class DatabaseHelper(context: Context) :
         }
         cursor.close()
         return list
+    }
+
+    fun getUserByNis(nis: String): User? {
+        val db = readableDatabase
+        val cursor = db.rawQuery(
+            "SELECT * FROM $TABLE_USER WHERE $COL_NIS = ? AND $COL_ROLE = 'siswa' LIMIT 1",
+            arrayOf(nis)
+        )
+        var user: User? = null
+        if (cursor.moveToFirst()) {
+            user = User(
+                id = cursor.getInt(cursor.getColumnIndexOrThrow(COL_ID)),
+                nis = cursor.getString(cursor.getColumnIndexOrThrow(COL_NIS)),
+                nama = cursor.getString(cursor.getColumnIndexOrThrow(COL_NAMA)),
+                password = cursor.getString(cursor.getColumnIndexOrThrow(COL_PASSWORD)),
+                role = cursor.getString(cursor.getColumnIndexOrThrow(COL_ROLE)),
+                kelas = cursor.getString(cursor.getColumnIndexOrThrow(COL_KELAS))
+            )
+        }
+        cursor.close()
+        return user
+    }
+
+    fun setHadirByNis(nis: String, metode: String = "qr_code"): Boolean {
+        val user = getUserByNis(nis) ?: return false
+        val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+        val now = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
+
+        val db = writableDatabase
+        val existing = getAbsensiByUserTanggal(user.id, today)
+
+        return if (existing != null) {
+            val values = ContentValues().apply {
+                put(COL_ABSEN_STATUS, "hadir")
+                put(COL_ABSEN_JAM, now)
+                put(COL_ABSEN_METODE, metode)
+            }
+            val result = db.update(
+                TABLE_ABSEN,
+                values,
+                "$COL_ABSEN_USER_ID = ? AND $COL_ABSEN_TANGGAL = ?",
+                arrayOf(user.id.toString(), today)
+            )
+            result > 0
+        } else {
+            val values = ContentValues().apply {
+                put(COL_ABSEN_USER_ID, user.id)
+                put(COL_ABSEN_TANGGAL, today)
+                put(COL_ABSEN_JAM, now)
+                put(COL_ABSEN_STATUS, "hadir")
+                put(COL_ABSEN_METODE, metode)
+            }
+            db.insert(TABLE_ABSEN, null, values) != -1L
+        }
     }
 }

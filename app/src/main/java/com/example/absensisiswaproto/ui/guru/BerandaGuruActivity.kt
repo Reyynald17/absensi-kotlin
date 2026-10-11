@@ -35,11 +35,19 @@ class BerandaGuruActivity : AppCompatActivity() {
         guruKelas = intent.getStringExtra("EXTRA_GURU_KELAS") ?: "-"
 
         if (guruId == 0) {
-            startActivity(Intent(this, LoginGuruActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            })
-            finish()
-            return
+            guruId = GuruSession.getGuruId(this)
+            if (guruId <= 0) {
+                startActivity(Intent(this, LoginGuruActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                })
+                finish()
+                return
+            } else {
+                guruNip = GuruSession.getNip(this)
+                guruNama = GuruSession.getNama(this)
+            }
+        } else {
+            GuruSession.save(this, guruId, guruNip, guruNama)
         }
 
         setupGreeting()
@@ -90,11 +98,11 @@ class BerandaGuruActivity : AppCompatActivity() {
         }
 
         binding.btnRekapKelas.setOnClickListener {
-            Toast.makeText(this, "Rekap kelas segera hadir", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, RekapKelasActivity::class.java))
         }
 
         binding.btnNotificationGuru.setOnClickListener {
-            Toast.makeText(this, "Notification segera hadir", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, NotificationGuruActivity::class.java))
         }
     }
 
@@ -108,11 +116,11 @@ class BerandaGuruActivity : AppCompatActivity() {
         }
 
         binding.btnSearchGuru.setOnClickListener {
-            Toast.makeText(this, "Pencarian segera hadir", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, SearchKelasActivity::class.java))
         }
 
         binding.btnProfileGuru.setOnClickListener {
-            Toast.makeText(this, "Profil guru segera hadir", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ProfileGuruActivity::class.java))
         }
     }
 }

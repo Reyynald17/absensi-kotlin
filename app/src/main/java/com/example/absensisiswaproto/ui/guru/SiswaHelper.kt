@@ -19,6 +19,17 @@ object SiswaHelper {
         }
     }
 
+    fun getFotoGuru(nama: String, id: Int = 0): Int {
+        val lower = nama.lowercase()
+        return when {
+            lower.contains("fuad") -> R.drawable.ppfuadnasirshapiro
+            else -> when (id) {
+                1 -> R.drawable.ppfuadnasirshapiro
+                else -> R.drawable.gurucewek
+            }
+        }
+    }
+
     fun isWeekend(tanggal: String): Boolean {
         return try {
             val parser = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())

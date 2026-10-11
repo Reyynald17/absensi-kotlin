@@ -24,7 +24,7 @@ class WelcomeGuruActivity : AppCompatActivity() {
         }
 
         binding.tvLoginOperator.setOnClickListener {
-            Toast.makeText(this, "Fitur operator segera hadir", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, LoginOperatorActivity::class.java))
         }
     }
 }

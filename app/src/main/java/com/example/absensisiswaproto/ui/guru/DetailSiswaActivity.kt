@@ -1,5 +1,6 @@
 package com.example.absensisiswaproto.ui.guru
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -177,10 +178,10 @@ class DetailSiswaActivity : AppCompatActivity() {
     private fun setupBottomNav() {
         binding.btnHomeGuru.setOnClickListener { finish() }
         binding.btnSearchGuru.setOnClickListener {
-            Toast.makeText(this, "Pencarian", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, SearchKelasActivity::class.java))
         }
         binding.btnProfileGuru.setOnClickListener {
-            Toast.makeText(this, "Profil", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ProfileGuruActivity::class.java))
         }
     }
 }

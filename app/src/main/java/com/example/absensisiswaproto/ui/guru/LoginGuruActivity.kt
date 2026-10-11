@@ -40,6 +40,7 @@ class LoginGuruActivity : AppCompatActivity() {
             if (guru == null) {
                 Toast.makeText(this, "NIP atau Nama Lengkap salah", Toast.LENGTH_SHORT).show()
             } else {
+                GuruSession.save(this, guru.id, guru.nip, guru.nama)
                 val intent = Intent(this, BerandaGuruActivity::class.java).apply {
                     putExtra("EXTRA_GURU_ID", guru.id)
                     putExtra("EXTRA_GURU_NIP", guru.nip)

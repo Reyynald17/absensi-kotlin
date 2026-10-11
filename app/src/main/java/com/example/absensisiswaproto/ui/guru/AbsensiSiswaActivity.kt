@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.data.local.RiwayatProvider
 import com.example.absensisiswaproto.databinding.ActivityAbsensiSiswaBinding
+import com.google.android.material.datepicker.MaterialDatePicker
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -23,11 +24,16 @@ class AbsensiSiswaActivity : AppCompatActivity() {
     private var tanggalFilter: String = ""
     private var statusFilter: String = "semua"
 
-    private val kelasOptions = arrayOf(
-        "X DKV 1", "X DKV 2", "X DKV 3",
-        "X RPL 1", "X RPL 2", "X RPL 3",
-        "XI DKV 1", "XI RPL 1", "XII DKV 1", "XII RPL 3"
-    )
+    private val stages = listOf("X", "XI", "XII")
+    private val majors = listOf("DKV", "RPL", "TKJ", "AN", "PSPT", "PS")
+    private val locals = listOf("1", "2", "3")
+
+    private val kelasOptions: Array<String> =
+        stages.flatMap { stage ->
+            majors.flatMap { major ->
+                locals.map { local -> "$stage $major $local" }
+            }
+        }.toTypedArray()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,8 +63,30 @@ class AbsensiSiswaActivity : AppCompatActivity() {
 
     private fun setupDatePicker() {
         updateTanggalText()
+
         binding.cardTanggal.setOnClickListener {
-            Toast.makeText(this, "Pilih tanggal (dummy: hari ini)", Toast.LENGTH_SHORT).show()
+            val picker = MaterialDatePicker.Builder.datePicker()
+                .setTitleText("Pilih Tanggal Absensi")
+                .setSelection(parseTanggalToMillis(tanggalFilter))
+                .build()
+
+            picker.addOnPositiveButtonClickListener { selection ->
+                val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+                tanggalFilter = formatter.format(Date(selection))
+                updateTanggalText()
+                loadData()
+            }
+
+            picker.show(supportFragmentManager, "date_picker")
+        }
+    }
+
+    private fun parseTanggalToMillis(tanggal: String): Long {
+        return try {
+            val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            formatter.parse(tanggal)?.time ?: System.currentTimeMillis()
+        } catch (e: Exception) {
+            System.currentTimeMillis()
         }
     }
 
@@ -163,10 +191,10 @@ class AbsensiSiswaActivity : AppCompatActivity() {
     private fun setupBottomNav() {
         binding.btnHomeGuru.setOnClickListener { finish() }
         binding.btnSearchGuru.setOnClickListener {
-            Toast.makeText(this, "Pencarian", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, SearchKelasActivity::class.java))
         }
         binding.btnProfileGuru.setOnClickListener {
-            Toast.makeText(this, "Profil", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, ProfileGuruActivity::class.java))
         }
     }
 
