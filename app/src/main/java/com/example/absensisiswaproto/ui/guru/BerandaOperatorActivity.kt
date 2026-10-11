@@ -1,4 +1,4 @@
-package com.example.absensisiswaproto.ui.guru
+package com.example.absensisiswaproto.ui.operator
 
 import android.os.Bundle
 import android.widget.Toast

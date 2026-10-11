@@ -152,7 +152,32 @@
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 
         <activity
-            android:name=".ui.guru.BerandaOperatorActivity"
+            android:name=".ui.operator.BerandaOperatorActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.operator.VerifikasiGuruActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.operator.DetailGuruVerifikasiActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.operator.KalenderOperatorActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.operator.FormEventActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.operator.ProfileOperatorActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 

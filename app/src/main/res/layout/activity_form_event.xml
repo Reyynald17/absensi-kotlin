@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_gradient_operator">
+
+    <ImageView
+        android:id="@+id/btnBack"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="48dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_arrow_back_white"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivFormIcon"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="16dp"
+        android:contentDescription="@null"
+        android:src="@drawable/ic_calendar_white"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toEndOf="@id/btnBack"
+        app:layout_constraintTop_toTopOf="@id/btnBack" />
+
+    <TextView
+        android:id="@+id/tvHeaderTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Tambahkan Event"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/ivFormIcon"
+        app:layout_constraintStart_toEndOf="@id/ivFormIcon"
+        app:layout_constraintTop_toTopOf="@id/ivFormIcon" />
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="16dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btnBack">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="20dp"
+            android:paddingBottom="40dp">
+
+            <TextView
+                style="@style/FormLabel"
+                android:text="Judul Event" />
+
+            <EditText
+                android:id="@+id/etJudul"
+                style="@style/FormInput"
+                android:autofillHints="name"
+                android:hint="contoh:Maulid Nabi"
+                android:inputType="text" />
+
+            <TextView
+                style="@style/FormLabel"
+                android:text="Tanggal &amp; Waktu" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTanggal"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_input_field_white"
+                    android:clickable="true"
+                    android:drawableStart="@drawable/ic_calendar_small_red"
+                    android:drawablePadding="8dp"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="12dp"
+                    android:text="17/08/2025"
+                    android:textColor="#1A1A1A"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/tvWaktu"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_input_field_white"
+                    android:clickable="true"
+                    android:drawableStart="@drawable/ic_clock_red"
+                    android:drawablePadding="8dp"
+                    android:focusable="true"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="12dp"
+                    android:text="08.00 - 11.00"
+                    android:textColor="#1A1A1A"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <TextView
+                style="@style/FormLabel"
+                android:text="Lokasi" />
+
+            <EditText
+                android:id="@+id/etLokasi"
+                style="@style/FormInput"
+                android:autofillHints="postalAddress"
+                android:hint="contoh:Sekolah,al-badar"
+                android:inputType="text" />
+
+            <TextView
+                style="@style/FormLabel"
+                android:text="Kategori" />
+
+            <AutoCompleteTextView
+                android:id="@+id/spKategori"
+                style="@style/FormInput"
+                android:hint="Pilih Kategori"
+                android:inputType="none" />
+
+            <TextView
+                style="@style/FormLabel"
+                android:text="Deskripsi" />
+
+            <EditText
+                android:id="@+id/etDeskripsi"
+                style="@style/FormInput"
+                android:layout_height="120dp"
+                android:autofillHints="notes"
+                android:gravity="top|start"
+                android:hint="Deskripsi event (opsional)"
+                android:inputType="textMultiLine" />
+
+            <Button
+                android:id="@+id/btnSimpan"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="24dp"
+                android:background="@drawable/bg_btn_merah_solid"
+                android:text="Tambahkan Event"
+                android:textAllCaps="false"
+                android:textColor="#FFFFFF"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@null" />
+
+            <Button
+                android:id="@+id/btnHapus"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_btn_outline_merah"
+                android:text="Hapus Event"
+                android:textAllCaps="false"
+                android:textColor="#D40000"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:visibility="gone"
+                app:backgroundTint="@null" />
+        </LinearLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

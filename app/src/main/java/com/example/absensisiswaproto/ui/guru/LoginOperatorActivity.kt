@@ -7,6 +7,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.databinding.ActivityLoginOperatorBinding
 import com.example.absensisiswaproto.ui.component.PressEffect
+import com.example.absensisiswaproto.ui.operator.BerandaOperatorActivity
+import com.example.absensisiswaproto.ui.operator.OperatorSession
 
 class LoginOperatorActivity : AppCompatActivity() {
 

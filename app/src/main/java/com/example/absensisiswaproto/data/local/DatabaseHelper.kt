@@ -5,9 +5,11 @@ import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
 import com.example.absensisiswaproto.data.model.Absensi
+import com.example.absensisiswaproto.data.model.Event
 import com.example.absensisiswaproto.data.model.Guru
+import com.example.absensisiswaproto.data.model.Operator
 import com.example.absensisiswaproto.data.model.User
-import com.example.absensisiswaproto.ui.guru.EventItem
+import com.example.absensisiswaproto.ui.operator.EventItem
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
@@ -18,7 +20,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "absensi.db"
-        private const val DATABASE_VERSION = 10
+        private const val DATABASE_VERSION = 14
 
         const val TABLE_USER = "users"
         const val COL_ID = "id"
@@ -47,6 +49,7 @@ class DatabaseHelper(context: Context) :
 
         const val TABLE_OPERATOR = "operator"
         const val TABLE_EVENT = "event"
+        const val TABLE_KALENDER = "kalender"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -85,29 +88,71 @@ class DatabaseHelper(context: Context) :
         """.trimIndent())
 
         db.execSQL("""
-            CREATE TABLE IF NOT EXISTS $TABLE_OPERATOR (
-                $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                $COL_NAMA TEXT UNIQUE NOT NULL,
-                $COL_PASSWORD TEXT NOT NULL
+            CREATE TABLE IF NOT EXISTS $TABLE_EVENT (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tanggal TEXT NOT NULL,
+                judul TEXT NOT NULL,
+                tipe TEXT NOT NULL,
+                waktu_mulai TEXT,
+                waktu_selesai TEXT,
+                lokasi TEXT,
+                deskripsi TEXT
             )
         """.trimIndent())
 
-        db.execSQL("INSERT OR IGNORE INTO $TABLE_OPERATOR ($COL_NAMA, $COL_PASSWORD) VALUES ('optu1', 'sukingawi')")
+        val seedEvent = listOf(
+            arrayOf("2026-05-01", "Tahun baru 2026 masehi", "libur", "00:00", "23:59", "-", "Hari libur nasional"),
+            arrayOf("2026-05-02", "Hari Pendidikan Nasional", "upacara", "07:00", "09:00", "Lapangan Sekolah", ""),
+            arrayOf("2026-05-16", "Isra Mi'raj Nabi Muhammad SAW", "upacara", "07:00", "09:00", "Lapangan Sekolah", ""),
+            arrayOf("2026-05-18", "Event Sekolah", "event", "08:00", "11:00", "Aula Sekolah", "Event rutin sekolah"),
+            arrayOf("2026-05-24", "Event Sekolah", "event", "09:00", "12:00", "Aula Sekolah", "")
+        )
+        seedEvent.forEach { arr ->
+            db.execSQL(
+                "INSERT OR IGNORE INTO $TABLE_EVENT (tanggal, judul, tipe, waktu_mulai, waktu_selesai, lokasi, deskripsi) VALUES (?,?,?,?,?,?,?)",
+                arr
+            )
+        }
+
+        val namaGuru = listOf(
+            "Sandy Rinaldi", "Budi Santoso", "Siti Aminah", "Ahmad Fauzi",
+            "Dewi Lestari", "Rizki Pratama", "Maya Sari", "Andi Wijaya",
+            "Rina Marlina", "Hendra Gunawan"
+        )
+        val jurusanList = listOf("DKV", "RPL", "TKJ", "AN", "PSPT", "PS")
+
+        for (i in 0 until 60) {
+            val nama = namaGuru[i % namaGuru.size]
+            val jurusan = jurusanList[i % jurusanList.size]
+            val status = if (i < 30) "pending" else "verified"
+            val nip = (1000000001L + i).toString()
+            val noTelp = "0812" + (10000000 + i).toString()
+            val email = "${nama.lowercase().replace(" ", ".")}${i}@sekolah.id"
+
+            db.execSQL(
+                "INSERT OR IGNORE INTO $TABLE_GURU (nip, nama, kelas_mapel, no_telp, email, status) VALUES (?,?,?,?,?,?)",
+                arrayOf(nip, nama, jurusan, noTelp, email, status)
+            )
+        }
 
         db.execSQL("""
-            CREATE TABLE IF NOT EXISTS $TABLE_EVENT (
-                $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                judul TEXT NOT NULL,
-                tanggal TEXT NOT NULL,
-                jam_mulai TEXT NOT NULL,
-                jam_selesai TEXT NOT NULL,
-                lokasi TEXT NOT NULL
+            CREATE TABLE IF NOT EXISTS $TABLE_OPERATOR (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                nama TEXT UNIQUE NOT NULL,
+                password TEXT NOT NULL,
+                nama_lengkap TEXT,
+                email TEXT,
+                no_telp TEXT,
+                jabatan TEXT
             )
         """.trimIndent())
 
-        db.execSQL("INSERT OR IGNORE INTO $TABLE_EVENT ($COL_ID, judul, tanggal, jam_mulai, jam_selesai, lokasi) VALUES (1, 'Rapat orang tua murid', '2026-10-06', '09:00', '12:00', 'Aula Sekolah')")
-        db.execSQL("INSERT OR IGNORE INTO $TABLE_EVENT ($COL_ID, judul, tanggal, jam_mulai, jam_selesai, lokasi) VALUES (2, 'Seminar SPMB', '2026-10-19', '09:00', '12:00', 'Aula Sekolah')")
-        db.execSQL("INSERT OR IGNORE INTO $TABLE_EVENT ($COL_ID, judul, tanggal, jam_mulai, jam_selesai, lokasi) VALUES (3, 'Pembuka P5', '2026-10-29', '08:30', '11:00', 'Aula Sekolah')")
+        db.execSQL("""
+            INSERT OR IGNORE INTO $TABLE_OPERATOR 
+            (nama, password, nama_lengkap, email, no_telp, jabatan)
+            VALUES ('optu1', 'sukingawi', 'Operator Sekolah', 
+                    'OperatorSekolah@Gmail.com', '-', 'Operator Sekolah')
+        """.trimIndent())
 
         seedData(db)
         seedGuru(db)
@@ -119,6 +164,7 @@ class DatabaseHelper(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS $TABLE_GURU")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_OPERATOR")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_EVENT")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_KALENDER")
         onCreate(db)
     }
 
@@ -252,6 +298,147 @@ class DatabaseHelper(context: Context) :
         cursor.close()
         return name
     }
+
+    fun getOperatorByNama(nama: String): Operator? {
+        readableDatabase.rawQuery(
+            "SELECT * FROM $TABLE_OPERATOR WHERE nama = ? LIMIT 1", arrayOf(nama)
+        ).use { c ->
+            if (c.moveToFirst()) {
+                return Operator(
+                    id = c.getInt(c.getColumnIndexOrThrow("id")),
+                    nama = c.getString(c.getColumnIndexOrThrow("nama")),
+                    password = "",
+                    namaLengkap = c.getString(c.getColumnIndexOrThrow("nama_lengkap")).orEmpty(),
+                    email = c.getString(c.getColumnIndexOrThrow("email")).orEmpty(),
+                    noTelp = c.getString(c.getColumnIndexOrThrow("no_telp")).orEmpty(),
+                    jabatan = c.getString(c.getColumnIndexOrThrow("jabatan")).orEmpty()
+                )
+            }
+        }
+        return null
+    }
+
+    fun getAllGuru(): List<Guru> {
+        val list = mutableListOf<Guru>()
+        readableDatabase.rawQuery(
+            "SELECT * FROM $TABLE_GURU ORDER BY status ASC, nama ASC", null
+        ).use { c -> while (c.moveToNext()) list += cursorToGuru(c) }
+        return list
+    }
+
+    fun getGuruByStatus(status: String): List<Guru> {
+        val list = mutableListOf<Guru>()
+        readableDatabase.rawQuery(
+            "SELECT * FROM $TABLE_GURU WHERE status = ? ORDER BY nama ASC",
+            arrayOf(status)
+        ).use { c -> while (c.moveToNext()) list += cursorToGuru(c) }
+        return list
+    }
+
+    fun getGuruByNip(nip: String): Guru? {
+        readableDatabase.rawQuery(
+            "SELECT * FROM $TABLE_GURU WHERE nip = ? LIMIT 1", arrayOf(nip)
+        ).use { c -> if (c.moveToFirst()) return cursorToGuru(c) }
+        return null
+    }
+
+    fun countGuruByStatus(status: String): Int {
+        val where = if (status == "all") "" else "WHERE status = ?"
+        val args = if (status == "all") null else arrayOf(status)
+        readableDatabase.rawQuery(
+            "SELECT COUNT(*) FROM $TABLE_GURU $where", args
+        ).use { c -> if (c.moveToFirst()) return c.getInt(0) }
+        return 0
+    }
+
+    fun updateStatusGuru(nip: String, status: String): Boolean {
+        return try {
+            writableDatabase.execSQL(
+                "UPDATE $TABLE_GURU SET status = ? WHERE nip = ?",
+                arrayOf(status, nip)
+            )
+            true
+        } catch (e: Exception) { false }
+    }
+
+    private fun cursorToGuru(c: android.database.Cursor): Guru = Guru(
+        id = c.getInt(c.getColumnIndexOrThrow("id")),
+        nip = c.getString(c.getColumnIndexOrThrow("nip")),
+        nama = c.getString(c.getColumnIndexOrThrow("nama")),
+        kelasMapel = c.getString(c.getColumnIndexOrThrow("kelas_mapel")),
+        noTelp = c.getString(c.getColumnIndexOrThrow("no_telp")),
+        email = c.getString(c.getColumnIndexOrThrow("email")),
+        status = c.getString(c.getColumnIndexOrThrow("status"))
+    )
+
+    fun getAllEventBulan(year: Int, month: Int): Map<Int, List<Event>> {
+        val result = mutableMapOf<Int, MutableList<Event>>()
+        val prefix = String.format("%04d-%02d-", year, month)
+        readableDatabase.rawQuery(
+            "SELECT * FROM $TABLE_EVENT WHERE tanggal LIKE ? ORDER BY tanggal ASC",
+            arrayOf("$prefix%")
+        ).use { c ->
+            while (c.moveToNext()) {
+                val ev = cursorToEvent(c)
+                val day = ev.tanggal.substring(8, 10).toIntOrNull() ?: 0
+                result.getOrPut(day) { mutableListOf() }.add(ev)
+            }
+        }
+        return result
+    }
+
+    fun getEventById(id: Int): Event? {
+        readableDatabase.rawQuery(
+            "SELECT * FROM $TABLE_EVENT WHERE id = ? LIMIT 1", arrayOf(id.toString())
+        ).use { c -> if (c.moveToFirst()) return cursorToEvent(c) }
+        return null
+    }
+
+    fun insertEvent(
+        tanggal: String, judul: String, tipe: String,
+        waktuMulai: String?, waktuSelesai: String?,
+        lokasi: String?, deskripsi: String?
+    ): Boolean {
+        return try {
+            writableDatabase.execSQL(
+                "INSERT INTO $TABLE_EVENT (tanggal, judul, tipe, waktu_mulai, waktu_selesai, lokasi, deskripsi) VALUES (?,?,?,?,?,?,?)",
+                arrayOf(tanggal, judul, tipe, waktuMulai, waktuSelesai, lokasi, deskripsi)
+            )
+            true
+        } catch (e: Exception) { false }
+    }
+
+    fun updateEvent(
+        id: Int, tanggal: String, judul: String, tipe: String,
+        waktuMulai: String?, waktuSelesai: String?,
+        lokasi: String?, deskripsi: String?
+    ): Boolean {
+        return try {
+            writableDatabase.execSQL(
+                "UPDATE $TABLE_EVENT SET tanggal=?, judul=?, tipe=?, waktu_mulai=?, waktu_selesai=?, lokasi=?, deskripsi=? WHERE id=?",
+                arrayOf(tanggal, judul, tipe, waktuMulai, waktuSelesai, lokasi, deskripsi, id)
+            )
+            true
+        } catch (e: Exception) { false }
+    }
+
+    fun deleteEvent(id: Int): Boolean {
+        return try {
+            writableDatabase.execSQL("DELETE FROM $TABLE_EVENT WHERE id = ?", arrayOf(id))
+            true
+        } catch (e: Exception) { false }
+    }
+
+    private fun cursorToEvent(c: android.database.Cursor): Event = Event(
+        id = c.getInt(c.getColumnIndexOrThrow("id")),
+        tanggal = c.getString(c.getColumnIndexOrThrow("tanggal")),
+        judul = c.getString(c.getColumnIndexOrThrow("judul")),
+        tipe = c.getString(c.getColumnIndexOrThrow("tipe")),
+        waktuMulai = c.getString(c.getColumnIndexOrThrow("waktu_mulai")),
+        waktuSelesai = c.getString(c.getColumnIndexOrThrow("waktu_selesai")),
+        lokasi = c.getString(c.getColumnIndexOrThrow("lokasi")),
+        deskripsi = c.getString(c.getColumnIndexOrThrow("deskripsi"))
+    )
 
     fun countGuruTotal(): Int {
         val db = readableDatabase

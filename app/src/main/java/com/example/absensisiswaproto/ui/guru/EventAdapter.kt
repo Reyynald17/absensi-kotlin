@@ -1,4 +1,4 @@
-package com.example.absensisiswaproto.ui.guru
+package com.example.absensisiswaproto.ui.operator
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
