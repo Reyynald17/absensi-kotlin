@@ -69,13 +69,9 @@ class BerandaActivity : AppCompatActivity() {
         val now = Date()
         val locale = Locale("id", "ID")
 
-        val tanggalFormat = SimpleDateFormat("dd", locale)
-        val hariFormat = SimpleDateFormat("EEEE", locale)
-        val bulanTahunFormat = SimpleDateFormat("MMMM/yyyy", locale)
-
-        card.tvTanggal.text = tanggalFormat.format(now)
-        card.tvHari.text = hariFormat.format(now)
-        card.tvBulanTahun.text = bulanTahunFormat.format(now)
+        card.tvTanggal.text = SimpleDateFormat("dd", locale).format(now)
+        card.tvHari.text = SimpleDateFormat("EEEE", locale).format(now)
+        card.tvBulanTahun.text = SimpleDateFormat("MMMM/yyyy", locale).format(now)
 
         val circleIds = listOf(
             R.id.ivStatus1,
@@ -85,27 +81,31 @@ class BerandaActivity : AppCompatActivity() {
             R.id.ivStatus5
         )
 
-        val todayIndex = getTodayIndex()
+        val cal = Calendar.getInstance()
+        cal.firstDayOfWeek = Calendar.MONDAY
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY)
+        cal.set(Calendar.HOUR_OF_DAY, 0)
+        cal.set(Calendar.MINUTE, 0)
+        cal.set(Calendar.SECOND, 0)
+        cal.set(Calendar.MILLISECOND, 0)
+
+        val dateFmt = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
 
         circleIds.forEachIndexed { index, id ->
             val view = card.root.findViewById<ImageView>(id)
-            if (index == todayIndex) {
-                view.setBackgroundResource(R.drawable.bg_status_hadir)
-            } else {
-                view.setBackgroundResource(R.drawable.bg_status_kosong)
-            }
-        }
-    }
+            val tanggalHariIni = dateFmt.format(cal.time)
 
-    private fun getTodayIndex(): Int {
-        val cal = Calendar.getInstance()
-        return when (cal.get(Calendar.DAY_OF_WEEK)) {
-            Calendar.MONDAY -> 0
-            Calendar.TUESDAY -> 1
-            Calendar.WEDNESDAY -> 2
-            Calendar.THURSDAY -> 3
-            Calendar.FRIDAY -> 4
-            else -> -1
+            val absensi = db.getAbsensiByTanggal(userId, tanggalHariIni)
+
+            val bgRes = when (absensi?.status?.lowercase()) {
+                "hadir" -> R.drawable.bg_status_hadir
+                "telat" -> R.drawable.bg_status_telat
+                "absen", "alpha" -> R.drawable.bg_icon_status_alpha
+                else -> R.drawable.bg_status_kosong
+            }
+
+            view.setBackgroundResource(bgRes)
+            cal.add(Calendar.DAY_OF_YEAR, 1)
         }
     }
 

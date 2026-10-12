@@ -94,7 +94,7 @@
                 android:id="@+id/ivGuruFigure"
                 android:layout_width="220dp"
                 android:layout_height="280dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="80dp"
                 android:contentDescription="@null"
                 android:scaleType="fitCenter"
                 android:src="@drawable/guru" />
@@ -149,7 +149,7 @@
                 android:focusable="true"
                 android:padding="6dp"
                 android:text="Login Operator"
-                android:textColor="@color/color_guru_accent"
+                android:textColor="@color/color_red"
                 android:textSize="14sp"
                 android:textStyle="bold" />
 

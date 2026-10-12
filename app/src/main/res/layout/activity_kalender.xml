@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="@color/color_white">
 
-    <!-- HEADER -->
     <RelativeLayout
         android:id="@+id/headerLayout"
         android:layout_width="0dp"
@@ -58,7 +57,6 @@
 
     </RelativeLayout>
 
-    <!-- VIEW STATE 1: MONTH GRID -->
     <ScrollView
         android:id="@+id/layoutMonthGrid"
         android:layout_width="0dp"
@@ -85,7 +83,6 @@
 
     </ScrollView>
 
-    <!-- VIEW STATE 2: MONTHLY CALENDAR DETAIL -->
     <LinearLayout
         android:id="@+id/layoutCalendarDetail"
         android:layout_width="0dp"
@@ -101,7 +98,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/headerLayout">
 
-        <!-- MAIN CALENDAR CARD -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
@@ -109,7 +105,6 @@
             android:background="@drawable/bg_dark_blue_card"
             android:orientation="vertical">
 
-            <!-- MONTH HEADER BAR -->
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -171,7 +166,6 @@
 
             </RelativeLayout>
 
-            <!-- DAYS OF WEEK -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -190,7 +184,6 @@
 
             </LinearLayout>
 
-            <!-- CALENDAR GRID -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCalendarDays"
                 android:layout_width="match_parent"
@@ -203,7 +196,6 @@
 
         </LinearLayout>
 
-        <!-- INFORMASI BOX -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -294,7 +286,29 @@
 
     </LinearLayout>
 
-    <!-- STUDENT ILLUSTRATIONS -->
+    <ImageView
+        android:id="@+id/ivStudentLeft"
+        android:layout_width="108dp"
+        android:layout_height="129dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginBottom="4dp"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/siswa_kiri"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageView
+        android:id="@+id/ivStudentRight"
+        android:layout_width="107dp"
+        android:layout_height="125dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="4dp"
+        android:contentDescription="@null"
+        android:scaleType="fitCenter"
+        android:src="@drawable/siswa_kanan"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <include
         android:id="@+id/bottomNav"
@@ -305,31 +319,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <ImageView
-        android:id="@+id/ivStudentLeft"
-        android:layout_width="108dp"
-        android:layout_height="129dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginBottom="4dp"
-        android:contentDescription="@null"
-        android:elevation="6dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/siswa_kiri"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- BOTTOM NAV -->
-    <ImageView
-        android:id="@+id/ivStudentRight"
-        android:layout_width="107dp"
-        android:layout_height="125dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="4dp"
-        android:contentDescription="@null"
-        android:elevation="6dp"
-        android:scaleType="fitCenter"
-        android:src="@drawable/siswa_kanan"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -698,7 +698,24 @@ class DatabaseHelper(context: Context) :
         cursor.close()
         return list
     }
-
+    fun getAbsensiByTanggal(userId: Int, tanggal: String): Absensi? {
+        readableDatabase.rawQuery(
+            "SELECT * FROM $TABLE_ABSEN WHERE user_id = ? AND tanggal = ? LIMIT 1",
+            arrayOf(userId.toString(), tanggal)
+        ).use { c ->
+            if (c.moveToFirst()) {
+                return Absensi(
+                    id = c.getInt(c.getColumnIndexOrThrow("id")),
+                    userId = c.getInt(c.getColumnIndexOrThrow("user_id")),
+                    tanggal = c.getString(c.getColumnIndexOrThrow("tanggal")),
+                    jam = c.getString(c.getColumnIndexOrThrow("jam")),
+                    status = c.getString(c.getColumnIndexOrThrow("status")),
+                    metode = c.getString(c.getColumnIndexOrThrow("metode"))
+                )
+            }
+        }
+        return null
+    }
     fun getAbsensiByUserTanggal(userId: Int, tanggal: String): Absensi? {
         val db = readableDatabase
         val cursor = db.rawQuery(
