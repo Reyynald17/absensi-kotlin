@@ -7,12 +7,16 @@ import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.databinding.ActivityKalenderBinding
 import com.example.absensisiswaproto.ui.beranda.BerandaActivity
 import com.example.absensisiswaproto.ui.profile.ProfileActivity
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Calendar
 
 class KalenderActivity : AppCompatActivity() {
@@ -34,48 +38,6 @@ class KalenderActivity : AppCompatActivity() {
     private val monthNames = arrayOf(
         "Januari", "Februari", "Maret", "April", "Mei", "Juni",
         "Juli", "Agustus", "September", "Oktober", "November", "Desember"
-    )
-
-    // Event per bulan (index 0 = Januari, dst)
-    // Format: list of Pair(tanggal, judul)
-    private val monthlyEvents: Map<Int, List<Pair<String, String>>> = mapOf(
-        0 to listOf(
-            "1" to "Tahun baru 2026 masehi",
-            "16" to "Isra Mi'raj Nabi Muhammad SAW"
-        ),
-        1 to listOf(
-            "17" to "Tahun baru Imlek 2577 Kongzili",
-            "18" to "Cuti bersama Imlek"
-        ),
-        2 to listOf(
-            "19" to "Hari Raya Nyepi Tahun Baru Saka 1948",
-            "20" to "Cuti bersama Hari Raya Nyepi"
-        ),
-        3 to listOf(
-            "3" to "Wafat Isa Al-Masih",
-            "5" to "Awal Ramadhan 1447 H"
-        ),
-        4 to listOf(
-            "1" to "Hari Buruh Internasional",
-            "14" to "Hari Raya Waisak"
-        ),
-        5 to listOf(
-            "1" to "Hari Lahir Pancasila"
-        ),
-        6 to emptyList(),
-        7 to listOf(
-            "17" to "Hari Kemerdekaan Republik Indonesia"
-        ),
-        8 to emptyList(),
-        9 to listOf(
-            "1" to "Hari Kesaktian Pancasila"
-        ),
-        10 to listOf(
-            "25" to "Hari Guru Nasional"
-        ),
-        11 to listOf(
-            "25" to "Hari Raya Natal"
-        )
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,9 +62,6 @@ class KalenderActivity : AppCompatActivity() {
         showMonthGridView()
     }
 
-    // =============================
-    // HEADER
-    // =============================
     private fun setupHeader() {
         binding.btnBack.setOnClickListener {
             if (binding.layoutCalendarDetail.visibility == View.VISIBLE) {
@@ -113,9 +72,6 @@ class KalenderActivity : AppCompatActivity() {
         }
     }
 
-    // =============================
-    // STATE 1: MONTH GRID
-    // =============================
     private fun setupMonthGrid() {
         monthAdapter = MonthAdapter(monthNames.toList()) { month ->
             val index = monthNames.indexOf(month)
@@ -131,9 +87,6 @@ class KalenderActivity : AppCompatActivity() {
         binding.tvHeaderTitle.text = "Kalender"
     }
 
-    // =============================
-    // STATE 2: CALENDAR DETAIL
-    // =============================
     private fun setupCalendarGrid() {
         dayAdapter = CalendarDaysAdapter(emptyList())
         binding.rvCalendarDays.layoutManager = GridLayoutManager(this, 7)
@@ -153,68 +106,75 @@ class KalenderActivity : AppCompatActivity() {
         binding.tvMonthName.text = monthNames[month]
         binding.tvYear.text = year.toString()
 
-        val cal = Calendar.getInstance()
-        cal.set(Calendar.YEAR, year)
-        cal.set(Calendar.MONTH, month)
-        cal.set(Calendar.DAY_OF_MONTH, 1)
+        lifecycleScope.launch {
+            val mapEvent = withContext(Dispatchers.IO) {
+                db.getAllEventBulan(year, month + 1)
+            }
 
-        val firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
-        val daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+            val cal = Calendar.getInstance()
+            cal.set(Calendar.YEAR, year)
+            cal.set(Calendar.MONTH, month)
+            cal.set(Calendar.DAY_OF_MONTH, 1)
 
-        val dayItems = mutableListOf<DayItem>()
+            val firstDayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+            val daysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
 
-        // Konversi Sunday-first ke Monday-first
-        val offset = if (firstDayOfWeek == Calendar.SUNDAY) 6 else firstDayOfWeek - 2
+            val dayItems = mutableListOf<DayItem>()
 
-        // Empty cells sebelum tanggal 1
-        for (i in 0 until offset) {
-            dayItems.add(DayItem(day = ""))
-        }
+            val offset = if (firstDayOfWeek == Calendar.SUNDAY) 6 else firstDayOfWeek - 2
 
-        // Ambil event bulan ini untuk warna merah
-        val eventDays = monthlyEvents[month]
-            ?.mapNotNull { it.first.toIntOrNull() }
-            ?.toSet()
-            ?: emptySet()
+            for (i in 0 until offset) {
+                dayItems.add(DayItem(day = ""))
+            }
 
-        // Hari ini (untuk highlight hijau)
-        val today = Calendar.getInstance()
-        val todayDay = today.get(Calendar.DAY_OF_MONTH)
-        val todayMonth = today.get(Calendar.MONTH)
-        val todayYear = today.get(Calendar.YEAR)
+            val today = Calendar.getInstance()
+            val todayDay = today.get(Calendar.DAY_OF_MONTH)
+            val todayMonth = today.get(Calendar.MONTH)
+            val todayYear = today.get(Calendar.YEAR)
 
-        for (day in 1..daysInMonth) {
-            cal.set(Calendar.DAY_OF_MONTH, day)
-            val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+            for (day in 1..daysInMonth) {
+                cal.set(Calendar.DAY_OF_MONTH, day)
+                val dayOfWeek = cal.get(Calendar.DAY_OF_WEEK)
+                val isSunday = dayOfWeek == Calendar.SUNDAY
+                val isToday = (day == todayDay && month == todayMonth && year == todayYear)
 
-            val isSunday = dayOfWeek == Calendar.SUNDAY
-            val isEvent = eventDays.contains(day)
-            val isToday = (day == todayDay && month == todayMonth && year == todayYear)
+                val eventsHariIni = mapEvent[day] ?: emptyList()
+                val tipeTertinggi = eventsHariIni.minByOrNull { tipePriority(it.tipe) }?.tipe
 
-            val isRed = isSunday || isEvent
-            val isGreen = !isRed && isToday
+                val isLibur = isSunday || tipeTertinggi == "libur"
+                val isUpacara = !isLibur && tipeTertinggi == "upacara"
+                val isEvent = !isLibur && !isUpacara && tipeTertinggi == "event"
+                val isGreen = !isLibur && !isUpacara && !isEvent && isToday
 
-            dayItems.add(
-                DayItem(
-                    day = day.toString(),
-                    isRed = isRed,
-                    isGreen = isGreen
+                dayItems.add(
+                    DayItem(
+                        day = day.toString(),
+                        isRed = isLibur,
+                        isGreen = isUpacara || isGreen,
+                        isBlue = isEvent
+                    )
                 )
-            )
+            }
+
+            dayAdapter.updateData(dayItems)
+            renderEventList(mapEvent)
         }
-
-        dayAdapter.updateData(dayItems)
-
-        renderEventList(month)
     }
 
-    private fun renderEventList(month: Int) {
+    private fun tipePriority(tipe: String): Int = when (tipe.lowercase()) {
+        "libur" -> 1
+        "upacara" -> 2
+        "event" -> 3
+        else -> 4
+    }
+
+    private fun renderEventList(mapEvent: Map<Int, List<com.example.absensisiswaproto.data.model.Event>>) {
         val container = binding.layoutEventList
         container.removeAllViews()
 
-        val events = monthlyEvents[month] ?: emptyList()
+        val allEvents = mapEvent.toSortedMap().flatMap { it.value }
 
-        if (events.isEmpty()) {
+        if (allEvents.isEmpty()) {
             val tv = TextView(this).apply {
                 text = "Tidak ada event bulan ini"
                 setTextColor(0xFFB0B0B0.toInt())
@@ -225,17 +185,15 @@ class KalenderActivity : AppCompatActivity() {
         }
 
         val inflater = LayoutInflater.from(this)
-        for ((number, title) in events) {
+        for (ev in allEvents) {
             val item = inflater.inflate(R.layout.item_event, container, false)
-            item.findViewById<TextView>(R.id.tvEventNumber).text = number
-            item.findViewById<TextView>(R.id.tvEventTitle).text = title
+            val dayNumber = ev.tanggal.substring(8, 10).trimStart('0')
+            item.findViewById<TextView>(R.id.tvEventNumber).text = dayNumber
+            item.findViewById<TextView>(R.id.tvEventTitle).text = ev.judul
             container.addView(item)
         }
     }
 
-    // =============================
-    // MONTH NAVIGATION
-    // =============================
     private fun setupMonthNavigation() {
         binding.btnPrevMonth.setOnClickListener {
             if (currentSelectedMonth > 0) {
@@ -254,9 +212,6 @@ class KalenderActivity : AppCompatActivity() {
         }
     }
 
-    // =============================
-    // BOTTOM NAV
-    // =============================
     private fun setupBottomNav() {
         val nav = binding.bottomNav
 
@@ -309,9 +264,13 @@ class KalenderActivity : AppCompatActivity() {
         }
     }
 
-    // =============================
-    // BACK HANDLER
-    // =============================
+    override fun onResume() {
+        super.onResume()
+        if (binding.layoutCalendarDetail.visibility == View.VISIBLE) {
+            renderMonthlyCalendar(currentSelectedMonth, currentYear)
+        }
+    }
+
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
         if (binding.layoutCalendarDetail.visibility == View.VISIBLE) {

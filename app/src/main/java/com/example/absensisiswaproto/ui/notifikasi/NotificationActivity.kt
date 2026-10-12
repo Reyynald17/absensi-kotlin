@@ -1,11 +1,13 @@
 package com.example.absensisiswaproto.ui.notifikasi
 
 import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.absensisiswaproto.R
+import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.data.model.Notif
 import com.example.absensisiswaproto.databinding.ActivityNotificationBinding
 import com.example.absensisiswaproto.ui.beranda.BerandaActivity
@@ -14,6 +16,7 @@ import com.example.absensisiswaproto.ui.profile.ProfileActivity
 class NotificationActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityNotificationBinding
+    private lateinit var db: DatabaseHelper
 
     private var userId: Int = 0
     private var userNis: String = ""
@@ -25,6 +28,8 @@ class NotificationActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityNotificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        db = DatabaseHelper(this)
 
         userId = intent.getIntExtra("EXTRA_USER_ID", 0)
         userNis = intent.getStringExtra("EXTRA_USER_NIS") ?: ""
@@ -44,88 +49,61 @@ class NotificationActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerView() {
-        val list = getDummyNotif()
+        val list = getNotifikasiFromDb()
         val adapter = NotificationAdapter(list)
         binding.rvNotif.layoutManager = LinearLayoutManager(this)
         binding.rvNotif.adapter = adapter
+
+        if (list.isNotEmpty()) {
+            db.markNotifikasiDibaca(userId)
+        }
     }
 
-    private fun getDummyNotif(): List<Notif> {
+
+    private fun getNotifikasiFromDb(): List<Notif> {
         val white = 0xFFFFFFFF.toInt()
         val black = 0xFF000000.toInt()
 
-        return listOf(
+        val notifItems = db.getNotifikasiByUser(userId)
+
+
+        if (notifItems.isEmpty()) {
+            return emptyList()
+        }
+
+        return notifItems.map { item ->
+            val (iconRes, bgRes, iconTint) = when {
+                item.judul.contains("Absensi", ignoreCase = true) -> Triple(
+                    R.drawable.ic_remove,
+                    R.drawable.bg_notif_circle_red,
+                    white
+                )
+                item.judul.contains("Event", ignoreCase = true) -> Triple(
+                    R.drawable.ic_kalendar,
+                    R.drawable.bg_notif_square_green,
+                    white
+                )
+                item.judul.contains("Hadir", ignoreCase = true) ||
+                        item.judul.contains("Absen", ignoreCase = true) -> Triple(
+                    R.drawable.ic_fingerprint,
+                    R.drawable.bg_notif_circle_green,
+                    white
+                )
+                else -> Triple(
+                    R.drawable.ic_fingerprint,
+                    R.drawable.bg_notif_circle_white,
+                    black
+                )
+            }
+
             Notif(
-                iconRes = R.drawable.ic_remove,
-                bgRes = R.drawable.bg_notif_circle_red,
-                iconTint = white,
-                title = "Tidak Hadir Lagi?",
-                subtitle = "hari kedua tidak hadir"
-            ),
-            Notif(
-                iconRes = R.drawable.ic_fingerprint,
-                bgRes = R.drawable.bg_notif_circle_green,
-                iconTint = white,
-                title = "Anda Sudah Absen",
-                subtitle = "anda hadir tepat waktu"
-            ),
-            Notif(
-                iconRes = R.drawable.ic_fingerprint,
-                bgRes = R.drawable.bg_notif_circle_green,
-                iconTint = white,
-                title = "Jangan Lupa Melakukan Absen",
-                subtitle = "lakukan absen sebelum terlambat"
-            ),
-            Notif(
-                iconRes = R.drawable.ic_remove,
-                bgRes = R.drawable.bg_notif_circle_white,
-                iconTint = black,
-                title = "Tidak Hadir Hari Ini?",
-                subtitle = "kabari wali anda"
-            ),
-            Notif(
-                iconRes = R.drawable.ic_kalendar,
-                bgRes = R.drawable.bg_notif_square_green,
-                iconTint = white,
-                title = "Saatnya Upacara",
-                subtitle = "lakukan absen sebelum terlambat"
-            ),
-            Notif(
-                iconRes = R.drawable.ic_fingerprint,
-                bgRes = R.drawable.bg_notif_circle_green,
-                iconTint = white,
-                title = "Anda Sudah Absen",
-                subtitle = "anda hadir tepat waktu"
-            ),
-            Notif(
-                iconRes = R.drawable.ic_fingerprint,
-                bgRes = R.drawable.bg_notif_circle_green,
-                iconTint = white,
-                title = "Jangan Lupa Melakukan Absen",
-                subtitle = "lakukan absen sebelum terlambat"
-            ),
-            Notif(
-                iconRes = R.drawable.ic_kalendar,
-                bgRes = R.drawable.bg_notif_square_white,
-                iconTint = black,
-                title = "Ada perubahan tanggal",
-                subtitle = "admin menambahkan jadwal baru"
-            ),
-            Notif(
-                iconRes = R.drawable.ic_book,
-                bgRes = R.drawable.bg_notif_square_white,
-                iconTint = black,
-                title = "Ada Perubahan Pelajaran",
-                subtitle = "mapel anda di rubah"
-            ),
-            Notif(
-                iconRes = R.drawable.ic_fingerprint,
-                bgRes = R.drawable.bg_notif_circle_green,
-                iconTint = white,
-                title = "Berhasil Absen",
-                subtitle = "Tetap datang walau terlambat"
+                iconRes = iconRes,
+                bgRes = bgRes,
+                iconTint = iconTint,
+                title = item.judul,
+                subtitle = item.pesan
             )
-        )
+        }
     }
 
     private fun setupBottomNav() {

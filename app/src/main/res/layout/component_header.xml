@@ -15,7 +15,7 @@
         android:layout_width="52dp"
         android:layout_height="66dp"
         android:contentDescription="@null"
-        android:src="@drawable/prov" />
+        android:src="@drawable/logoround" />
 
     <LinearLayout
         android:layout_width="0dp"
@@ -65,6 +65,7 @@
             app:tint="@color/color_white" />
 
         <TextView
+            android:id="@+id/tvNotifBadge"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_gravity="top|end"
@@ -73,7 +74,8 @@
             android:text="0"
             android:textColor="@color/color_white"
             android:textSize="11sp"
-            android:textStyle="bold" />
+            android:textStyle="bold"
+            android:visibility="gone" />
 
     </FrameLayout>
 

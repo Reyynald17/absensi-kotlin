@@ -2,89 +2,55 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/color_white">
 
     <ImageView
-        android:id="@+id/ivBgPattern"
+        android:id="@+id/ivBackground"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:alpha="0.08"
+        android:layout_height="280dp"
+        android:layout_marginBottom="-80dp"
+        android:layout_marginEnd="0dp"
         android:contentDescription="@null"
-        android:scaleType="centerCrop"
-        android:src="@drawable/bg_pattern"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:scaleType="fitCenter"
+        android:src="@drawable/bg_sekolah_siswa"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintStart_toStartOf="parent" />
 
-    <ScrollView
+    <LinearLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:fillViewport="true"
-        android:scrollbars="none"
+        android:background="@android:color/transparent"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+        <include
+            android:id="@+id/headerLayout"
+            layout="@layout/component_header" />
 
-            <include
-                android:id="@+id/headerLayout"
-                layout="@layout/component_header" />
+        <include
+            android:id="@+id/cardKehadiran"
+            layout="@layout/component_card_kehadiran" />
 
-            <include
-                android:id="@+id/cardKehadiran"
-                layout="@layout/component_card_kehadiran" />
+        <include
+            android:id="@+id/absenHariIni"
+            layout="@layout/component_absen_hari_ini" />
 
-            <include
-                android:id="@+id/absenHariIni"
-                layout="@layout/component_absen_hari_ini" />
+        <include
+            android:id="@+id/menuGrid"
+            layout="@layout/component_menu_grid" />
 
-            <include
-                android:id="@+id/menuGrid"
-                layout="@layout/component_menu_grid" />
+        <include
+            android:id="@+id/quoteLayout"
+            layout="@layout/component_quote" />
 
-            <include
-                android:id="@+id/quoteLayout"
-                layout="@layout/component_quote" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="220dp" />
-
-        </LinearLayout>
-
-    </ScrollView>
-
-    <ImageView
-        android:id="@+id/ivSiswaKiri"
-        android:layout_width="162.5dp"
-        android:layout_height="250dp"
-        android:contentDescription="@null"
-        android:scaleType="fitEnd"
-        android:src="@drawable/siswa_kiri"
-        android:translationX="-20dp"
-        android:translationY="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ImageView
-        android:id="@+id/ivSiswaKanan"
-        android:layout_width="182.5dp"
-        android:layout_height="270dp"
-        android:contentDescription="@null"
-        android:scaleType="fitEnd"
-        android:src="@drawable/siswa_kanan"
-        android:translationX="20dp"
-        android:translationY="30dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    </LinearLayout>
 
     <include
         android:id="@+id/bottomNav"
@@ -94,6 +60,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

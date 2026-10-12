@@ -7,6 +7,19 @@
     android:background="@color/color_primary">
 
     <ImageView
+        android:id="@+id/ivBackground"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg_sekolah_siswa"
+        android:alpha="0.15"
+        android:contentDescription="@null"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <ImageView
         android:id="@+id/ivPatternTop"
         android:layout_width="205dp"
         android:layout_height="205dp"
@@ -45,7 +58,7 @@
         android:layout_width="79dp"
         android:layout_height="99dp"
         android:layout_marginTop="107dp"
-        android:src="@drawable/prov"
+        android:src="@drawable/transparentround"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

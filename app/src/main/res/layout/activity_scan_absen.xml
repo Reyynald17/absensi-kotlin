@@ -84,6 +84,31 @@
         </FrameLayout>
 
         <TextView
+            android:id="@+id/tvInstruksi"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="14dp"
+            android:gravity="center"
+            android:text="Posisikan wajah di tengah lingkaran"
+            android:textColor="#123B5D"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnMulaiScan"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:layout_marginTop="12dp"
+            android:background="@drawable/bg_button_guru"
+            android:paddingStart="32dp"
+            android:paddingEnd="32dp"
+            android:text="MULAI SCAN"
+            android:textAllCaps="false"
+            android:textColor="#FFFFFF"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
+
+        <TextView
             android:id="@+id/tvClock"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -125,50 +150,7 @@
             android:textSize="16sp"
             android:textStyle="bold" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:background="@drawable/bg_lokasi_card"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
-            android:padding="12dp">
-
-            <ImageView
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:contentDescription="@null"
-                android:scaleType="centerCrop"
-                android:src="@drawable/bgrumah" />
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="12dp"
-                android:layout_weight="1"
-                android:orientation="vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Anda sudah Berada Di Lokasi"
-                    android:textColor="#32D800"
-                    android:textSize="12sp"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="2dp"
-                    android:text="Cek Lokasi"
-                    android:textColor="#B0B0B0"
-                    android:textSize="10sp" />
-
-            </LinearLayout>
-
-        </LinearLayout>
+        
 
         <View
             android:layout_width="match_parent"

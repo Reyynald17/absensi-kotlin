@@ -1,6 +1,8 @@
 package com.example.absensisiswaproto.ui.absen
 
 import android.Manifest
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.animation.ValueAnimator
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -12,6 +14,7 @@ import android.view.animation.LinearInterpolator
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -24,12 +27,13 @@ import com.example.absensisiswaproto.ui.beranda.BerandaActivity
 import com.example.absensisiswaproto.ui.profile.ProfileActivity
 import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.face.FaceDetection
+import com.google.mlkit.vision.face.FaceDetector
 import com.google.mlkit.vision.face.FaceDetectorOptions
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@androidx.camera.core.ExperimentalGetImage
+@ExperimentalGetImage
 class ScanAbsenActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityScanAbsenBinding
@@ -41,11 +45,12 @@ class ScanAbsenActivity : AppCompatActivity() {
     private var userRole: String = ""
     private var userKelas: String = ""
 
-    private var isFaceMode = false
+    private var isFaceMode = true
     private var isScanning = false
+    private var faceScanningActive = false
 
     private var cameraProvider: ProcessCameraProvider? = null
-    private var faceDetector: com.google.mlkit.vision.face.FaceDetector? = null
+    private var faceDetector: FaceDetector? = null
 
     private val clockHandler = Handler(Looper.getMainLooper())
     private val clockRunnable = object : Runnable {
@@ -70,9 +75,11 @@ class ScanAbsenActivity : AppCompatActivity() {
 
         setupHeader()
         setupToggle()
+        setupMulaiScanButton()
         setupBottomNav()
 
-        switchMode(false)
+        val initialMode = intent.getStringExtra("EXTRA_MODE") ?: "faceid"
+        switchMode(initialMode.equals("faceid", ignoreCase = true))
     }
 
     override fun onResume() {
@@ -102,8 +109,25 @@ class ScanAbsenActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupMulaiScanButton() {
+        binding.btnMulaiScan.setOnClickListener {
+            if (isScanning || faceScanningActive) return@setOnClickListener
+
+            if (isFaceMode) {
+                faceScanningActive = true
+                binding.btnMulaiScan.visibility = View.GONE
+                binding.tvInstruksi.text = "Mendeteksi wajah..."
+            } else {
+                binding.btnMulaiScan.visibility = View.GONE
+                binding.tvInstruksi.text = "Memindai sidik jari..."
+                startFingerprintScan()
+            }
+        }
+    }
+
     private fun switchMode(face: Boolean) {
         isFaceMode = face
+        faceScanningActive = false
         binding.arcProgress.setProgress(0f)
 
         if (face) {
@@ -111,6 +135,9 @@ class ScanAbsenActivity : AppCompatActivity() {
             binding.ivScanIcon.setImageResource(R.drawable.ic_face_id)
             binding.ivScanIcon.visibility = View.GONE
             binding.cameraPreview.visibility = View.VISIBLE
+            binding.tvInstruksi.visibility = View.VISIBLE
+            binding.tvInstruksi.text = "Posisikan wajah di tengah lingkaran"
+            binding.btnMulaiScan.visibility = View.VISIBLE
 
             if (hasCameraPermission()) {
                 startCamera()
@@ -125,9 +152,13 @@ class ScanAbsenActivity : AppCompatActivity() {
             binding.tvToggleMode.text = "Fingerprint"
             binding.ivScanIcon.setImageResource(R.drawable.ic_fingerprint)
             binding.ivScanIcon.visibility = View.VISIBLE
+            binding.ivScanIcon.alpha = 1f
             binding.cameraPreview.visibility = View.GONE
+            binding.tvInstruksi.visibility = View.VISIBLE
+            binding.tvInstruksi.text = "Tekan MULAI SCAN untuk memindai sidik jari"
+            binding.btnMulaiScan.visibility = View.VISIBLE
+
             stopCamera()
-            startFingerprintScan()
         }
     }
 
@@ -145,8 +176,8 @@ class ScanAbsenActivity : AppCompatActivity() {
                 binding.arcProgress.setProgress(v)
                 binding.ivScanIcon.alpha = 0.5f + v * 0.5f
             }
-            addListener(object : android.animation.AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: android.animation.Animator) {
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
                     if (isScanning) {
                         binding.ivScanIcon.setImageResource(R.drawable.ic_check)
                         binding.ivScanIcon.alpha = 1f
@@ -179,10 +210,8 @@ class ScanAbsenActivity : AppCompatActivity() {
         }
     }
 
-    @androidx.camera.core.ExperimentalGetImage
+    @ExperimentalGetImage
     private fun startCamera() {
-        if (isScanning) return
-
         val future = ProcessCameraProvider.getInstance(this)
         future.addListener({
             try {
@@ -207,14 +236,14 @@ class ScanAbsenActivity : AppCompatActivity() {
 
                 analysis.setAnalyzer(ContextCompat.getMainExecutor(this)) { imageProxy ->
                     val mediaImage = imageProxy.image
-                    if (mediaImage != null && !isScanning) {
+                    if (mediaImage != null && faceScanningActive && !isScanning) {
                         val image = InputImage.fromMediaImage(
                             mediaImage,
                             imageProxy.imageInfo.rotationDegrees
                         )
                         detector.process(image)
                             .addOnSuccessListener { faces ->
-                                if (faces.isNotEmpty() && !isScanning) {
+                                if (faces.isNotEmpty() && !isScanning && faceScanningActive) {
                                     runOnUiThread { onFaceDetected() }
                                 }
                             }
@@ -248,14 +277,16 @@ class ScanAbsenActivity : AppCompatActivity() {
         if (isScanning) return
         isScanning = true
 
+        binding.tvInstruksi.text = "Wajah terdeteksi..."
+
         val animator = ValueAnimator.ofFloat(0f, 1f).apply {
             duration = 1500
             interpolator = LinearInterpolator()
             addUpdateListener {
                 binding.arcProgress.setProgress(it.animatedValue as Float)
             }
-            addListener(object : android.animation.AnimatorListenerAdapter() {
-                override fun onAnimationEnd(animation: android.animation.Animator) {
+            addListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
                     saveAndFinish("faceid")
                 }
             })
@@ -278,7 +309,10 @@ class ScanAbsenActivity : AppCompatActivity() {
             } else {
                 Toast.makeText(this, "Absen gagal", Toast.LENGTH_SHORT).show()
                 isScanning = false
+                faceScanningActive = false
                 binding.arcProgress.setProgress(0f)
+                binding.tvInstruksi.text = "Tekan MULAI SCAN untuk mencoba lagi"
+                binding.btnMulaiScan.visibility = View.VISIBLE
             }
         }, 400)
     }

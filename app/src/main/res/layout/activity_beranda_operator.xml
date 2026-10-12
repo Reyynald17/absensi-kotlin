@@ -486,7 +486,7 @@
                 android:id="@+id/btnNavBeranda"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
+                android:layout_marginBottom="0dp"
                 android:layout_weight="1"
                 android:clickable="true"
                 android:focusable="true"
@@ -500,8 +500,8 @@
                     android:elevation="6dp">
 
                     <ImageView
-                        android:layout_width="28dp"
-                        android:layout_height="28dp"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
                         android:layout_gravity="center"
                         android:contentDescription="@null"
                         android:src="@drawable/ic_home_nav_red" />

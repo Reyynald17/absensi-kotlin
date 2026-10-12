@@ -10,6 +10,7 @@ import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.data.local.RiwayatProvider
 import com.example.absensisiswaproto.databinding.ActivityDetailSiswaBinding
+import com.example.absensisiswaproto.util.NotificationHelper
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -152,11 +153,34 @@ class DetailSiswaActivity : AppCompatActivity() {
             .setTitle("Ubah Status Absensi")
             .setItems(options) { _, which ->
                 val newStatus = values[which]
+                val label = options[which]
+
                 val berhasil = db.updateStatusAbsensi(siswaId, tanggal, newStatus)
+
                 if (berhasil) {
+                    // ⭐ 1. Simpan notifikasi ke DB (untuk badge di beranda siswa)
+                    val judul = "Status Absensi Diubah"
+                    val pesan = "Status absensi kamu untuk tanggal $tanggal " +
+                            "diubah menjadi ${label.uppercase()} oleh guru."
+
+                    db.insertNotifikasi(
+                        userId = siswaId,
+                        judul = judul,
+                        pesan = pesan
+                    )
+
+                    // ⭐ 2. Tampilkan notifikasi sistem (heads-up pop-up)
+                    NotificationHelper.showNotification(
+                        context = this,
+                        userId = siswaId,
+                        title = judul,
+                        message = pesan,
+                        notifId = siswaId
+                    )
+
                     Toast.makeText(
                         this,
-                        "Status diubah menjadi ${options[which]}",
+                        "Status diubah menjadi $label",
                         Toast.LENGTH_SHORT
                     ).show()
                     loadStatusHariIni()

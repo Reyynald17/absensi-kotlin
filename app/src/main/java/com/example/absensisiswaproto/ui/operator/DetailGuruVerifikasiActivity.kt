@@ -52,10 +52,10 @@ class DetailGuruVerifikasiActivity : AppCompatActivity() {
         binding.tvJurusanDetail.text = "Kejuruan: ${OperatorUtils.extractJurusan(g.kelasMapel)}"
         binding.tvSekolahDetail.text = "SMK Negri 9 Medan"
 
-        if (g.status == "verified") {
+        if (g.status.equals("verified", ignoreCase = true)) {
             binding.tvBadgeDetail.text = "Berhasil verifikasi"
             binding.tvBadgeDetail.setBackgroundResource(R.drawable.bg_badge_terverifikasi)
-            binding.tvBadgeDetail.setTextColor(Color.parseColor("#1E8827"))
+            binding.tvBadgeDetail.setTextColor(Color.parseColor("#22C55E"))
             binding.btnVerifikasiDetail.visibility = View.GONE
         } else {
             binding.tvBadgeDetail.text = "Menunggu verifikasi"
@@ -67,9 +67,13 @@ class DetailGuruVerifikasiActivity : AppCompatActivity() {
                     .setTitle("Verifikasi Guru")
                     .setMessage("Yakin memverifikasi ${g.nama}?")
                     .setPositiveButton("Verifikasi") { _, _ ->
-                        db.updateStatusGuru(g.nip, "verified")
-                        Toast.makeText(this, "Berhasil diverifikasi", Toast.LENGTH_SHORT).show()
-                        finish()
+                        val ok = db.updateStatusGuruById(g.id, "verified")
+                        if (ok) {
+                            Toast.makeText(this, "Berhasil diverifikasi", Toast.LENGTH_SHORT).show()
+                            finish()
+                        } else {
+                            Toast.makeText(this, "Gagal verifikasi", Toast.LENGTH_SHORT).show()
+                        }
                     }
                     .setNegativeButton("Batal", null)
                     .show()
@@ -79,8 +83,7 @@ class DetailGuruVerifikasiActivity : AppCompatActivity() {
 
     private fun setupBottomNav() {
         binding.bottomNav.btnNavAgenda.setOnClickListener {
-            startActivity(Intent(this, AgendaEventActivity::class.java))
-            finish()
+            startActivity(Intent(this, AgendaEventActivity::class.java)); finish()
         }
         binding.bottomNav.btnNavBeranda.setOnClickListener {
             startActivity(Intent(this, BerandaOperatorActivity::class.java)

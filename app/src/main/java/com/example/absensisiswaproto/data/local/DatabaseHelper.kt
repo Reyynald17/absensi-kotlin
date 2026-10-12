@@ -8,6 +8,7 @@ import com.example.absensisiswaproto.data.model.Absensi
 import com.example.absensisiswaproto.data.model.Event
 import com.example.absensisiswaproto.data.model.Guru
 import com.example.absensisiswaproto.data.model.Operator
+import com.example.absensisiswaproto.data.model.NotifItem
 import com.example.absensisiswaproto.data.model.User
 import com.example.absensisiswaproto.ui.operator.EventItem
 import java.text.SimpleDateFormat
@@ -20,7 +21,7 @@ class DatabaseHelper(context: Context) :
 
     companion object {
         private const val DATABASE_NAME = "absensi.db"
-        private const val DATABASE_VERSION = 14
+        private const val DATABASE_VERSION = 15
 
         const val TABLE_USER = "users"
         const val COL_ID = "id"
@@ -49,20 +50,29 @@ class DatabaseHelper(context: Context) :
 
         const val TABLE_OPERATOR = "operator"
         const val TABLE_EVENT = "event"
+
+        const val TABLE_NOTIF = "notifikasi"
+        const val COL_NOTIF_ID = "id"
+        const val COL_NOTIF_USER_ID = "user_id"
+        const val COL_NOTIF_JUDUL = "judul"
+        const val COL_NOTIF_PESAN = "pesan"
+        const val COL_NOTIF_TANGGAL = "tanggal"
+        const val COL_NOTIF_DIBACA = "dibaca"
+
         const val TABLE_KALENDER = "kalender"
     }
 
     override fun onCreate(db: SQLiteDatabase) {
         db.execSQL("""
-    CREATE TABLE $TABLE_USER (
-        $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
-        $COL_NIS TEXT UNIQUE NOT NULL,
-        $COL_NAMA TEXT NOT NULL,
-        $COL_PASSWORD TEXT NOT NULL,
-        $COL_ROLE TEXT NOT NULL,
-        $COL_KELAS TEXT NOT NULL
-    )
-""".trimIndent())
+            CREATE TABLE $TABLE_USER (
+                $COL_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COL_NIS TEXT UNIQUE NOT NULL,
+                $COL_NAMA TEXT NOT NULL,
+                $COL_PASSWORD TEXT NOT NULL,
+                $COL_ROLE TEXT NOT NULL,
+                $COL_KELAS TEXT NOT NULL
+            )
+        """.trimIndent())
 
         db.execSQL("""
             CREATE TABLE $TABLE_ABSEN (
@@ -97,6 +107,26 @@ class DatabaseHelper(context: Context) :
                 waktu_selesai TEXT,
                 lokasi TEXT,
                 deskripsi TEXT
+            )
+        """.trimIndent())
+
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS $TABLE_NOTIF (
+                $COL_NOTIF_ID INTEGER PRIMARY KEY AUTOINCREMENT,
+                $COL_NOTIF_USER_ID INTEGER NOT NULL,
+                $COL_NOTIF_JUDUL TEXT NOT NULL,
+                $COL_NOTIF_PESAN TEXT NOT NULL,
+                $COL_NOTIF_TANGGAL TEXT NOT NULL,
+                $COL_NOTIF_DIBACA INTEGER DEFAULT 0
+            )
+        """.trimIndent())
+
+        db.execSQL("""
+            CREATE TABLE IF NOT EXISTS $TABLE_KALENDER (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                tanggal TEXT NOT NULL,
+                judul TEXT NOT NULL,
+                tipe TEXT NOT NULL
             )
         """.trimIndent())
 
@@ -165,6 +195,7 @@ class DatabaseHelper(context: Context) :
         db.execSQL("DROP TABLE IF EXISTS $TABLE_OPERATOR")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_EVENT")
         db.execSQL("DROP TABLE IF EXISTS $TABLE_KALENDER")
+        db.execSQL("DROP TABLE IF EXISTS $TABLE_NOTIF")
         onCreate(db)
     }
 
@@ -310,7 +341,7 @@ class DatabaseHelper(context: Context) :
                 WHERE nama = 'optu1'
             """.trimIndent())
         } catch (e: Exception) {
-            // Ignore
+
         }
     }
 
@@ -379,12 +410,36 @@ class DatabaseHelper(context: Context) :
 
     fun updateStatusGuru(nip: String, status: String): Boolean {
         return try {
-            writableDatabase.execSQL(
-                "UPDATE $TABLE_GURU SET status = ? WHERE nip = ?",
-                arrayOf(status, nip)
+            val values = ContentValues().apply {
+                put(COL_GURU_STATUS, status)
+            }
+            val rows = writableDatabase.update(
+                TABLE_GURU,
+                values,
+                "$COL_GURU_NIP = ?",
+                arrayOf(nip)
             )
-            true
-        } catch (e: Exception) { false }
+            rows > 0
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun updateStatusGuruById(id: Int, status: String): Boolean {
+        return try {
+            val values = ContentValues().apply {
+                put(COL_GURU_STATUS, status)
+            }
+            val rows = writableDatabase.update(
+                TABLE_GURU,
+                values,
+                "$COL_GURU_ID = ?",
+                arrayOf(id.toString())
+            )
+            rows > 0
+        } catch (e: Exception) {
+            false
+        }
     }
 
     private fun cursorToGuru(c: android.database.Cursor): Guru = Guru(
@@ -698,6 +753,7 @@ class DatabaseHelper(context: Context) :
         cursor.close()
         return list
     }
+
     fun getAbsensiByTanggal(userId: Int, tanggal: String): Absensi? {
         readableDatabase.rawQuery(
             "SELECT * FROM $TABLE_ABSEN WHERE user_id = ? AND tanggal = ? LIMIT 1",
@@ -716,6 +772,7 @@ class DatabaseHelper(context: Context) :
         }
         return null
     }
+
     fun getAbsensiByUserTanggal(userId: Int, tanggal: String): Absensi? {
         val db = readableDatabase
         val cursor = db.rawQuery(
@@ -911,6 +968,60 @@ class DatabaseHelper(context: Context) :
                 put(COL_ABSEN_METODE, metode)
             }
             db.insert(TABLE_ABSEN, null, values) != -1L
+        }
+    }
+
+    fun insertNotifikasi(userId: Int, judul: String, pesan: String): Boolean {
+        val tanggal = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+            .format(Date())
+        return try {
+            writableDatabase.execSQL(
+                "INSERT INTO $TABLE_NOTIF ($COL_NOTIF_USER_ID, $COL_NOTIF_JUDUL, $COL_NOTIF_PESAN, $COL_NOTIF_TANGGAL, $COL_NOTIF_DIBACA) VALUES (?,?,?,?,0)",
+                arrayOf(userId, judul, pesan, tanggal)
+            )
+            true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun countNotifikasiBelumDibaca(userId: Int): Int {
+        readableDatabase.rawQuery(
+            "SELECT COUNT(*) FROM $TABLE_NOTIF WHERE $COL_NOTIF_USER_ID = ? AND $COL_NOTIF_DIBACA = 0",
+            arrayOf(userId.toString())
+        ).use { c -> if (c.moveToFirst()) return c.getInt(0) }
+        return 0
+    }
+
+    fun getNotifikasiByUser(userId: Int): List<NotifItem> {
+        val list = mutableListOf<NotifItem>()
+        readableDatabase.rawQuery(
+            "SELECT * FROM $TABLE_NOTIF WHERE $COL_NOTIF_USER_ID = ? ORDER BY $COL_NOTIF_TANGGAL DESC",
+            arrayOf(userId.toString())
+        ).use { c ->
+            while (c.moveToNext()) {
+                list += NotifItem(
+                    id = c.getInt(c.getColumnIndexOrThrow(COL_NOTIF_ID)),
+                    userId = c.getInt(c.getColumnIndexOrThrow(COL_NOTIF_USER_ID)),
+                    judul = c.getString(c.getColumnIndexOrThrow(COL_NOTIF_JUDUL)),
+                    pesan = c.getString(c.getColumnIndexOrThrow(COL_NOTIF_PESAN)),
+                    tanggal = c.getString(c.getColumnIndexOrThrow(COL_NOTIF_TANGGAL)),
+                    dibaca = c.getInt(c.getColumnIndexOrThrow(COL_NOTIF_DIBACA)) == 1
+                )
+            }
+        }
+        return list
+    }
+
+    fun markNotifikasiDibaca(userId: Int): Boolean {
+        return try {
+            writableDatabase.execSQL(
+                "UPDATE $TABLE_NOTIF SET $COL_NOTIF_DIBACA = 1 WHERE $COL_NOTIF_USER_ID = ?",
+                arrayOf(userId)
+            )
+            true
+        } catch (e: Exception) {
+            false
         }
     }
 }

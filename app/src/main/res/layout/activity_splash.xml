@@ -33,7 +33,7 @@
         android:id="@+id/ivLogo"
         android:layout_width="159dp"
         android:layout_height="199dp"
-        android:src="@drawable/prov"
+        android:src="@drawable/transparentround"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

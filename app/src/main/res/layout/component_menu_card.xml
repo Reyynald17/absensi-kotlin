@@ -7,7 +7,7 @@
     android:elevation="3dp"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="30dp">
+    android:padding="16dp">
 
     <ImageView
         android:id="@+id/ivMenuIcon"

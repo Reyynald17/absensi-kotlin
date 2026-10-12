@@ -36,7 +36,7 @@
                     android:layout_width="52dp"
                     android:layout_height="66dp"
                     android:contentDescription="@null"
-                    android:src="@drawable/prov" />
+                    android:src="@drawable/logoround" />
 
                 <LinearLayout
                     android:layout_width="0dp"

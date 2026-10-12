@@ -48,7 +48,7 @@
                 android:layout_width="80dp"
                 android:layout_height="100dp"
                 android:contentDescription="@null"
-                android:src="@drawable/prov" />
+                android:src="@drawable/transparentround" />
 
             <TextView
                 android:id="@+id/tvMotto"

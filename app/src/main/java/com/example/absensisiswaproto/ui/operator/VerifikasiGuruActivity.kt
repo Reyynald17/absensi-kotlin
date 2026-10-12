@@ -1,7 +1,6 @@
 package com.example.absensisiswaproto.ui.operator
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -69,8 +68,8 @@ class VerifikasiGuruActivity : AppCompatActivity() {
     private fun highlightChip() {
         val active = R.drawable.bg_chip_white
         val inactive = R.drawable.bg_chip_white_outline
-        val activeRed = Color.parseColor("#8B0000")
-        val white = Color.parseColor("#FFFFFF")
+        val activeRed = android.graphics.Color.parseColor("#8B0000")
+        val white = android.graphics.Color.parseColor("#FFFFFF")
 
         binding.chipSemua.setBackgroundResource(
             if (currentFilter == "all") active else inactive)
@@ -94,8 +93,7 @@ class VerifikasiGuruActivity : AppCompatActivity() {
 
     private fun setupBottomNav() {
         binding.bottomNav.btnNavAgenda.setOnClickListener {
-            startActivity(Intent(this, AgendaEventActivity::class.java))
-            finish()
+            startActivity(Intent(this, AgendaEventActivity::class.java)); finish()
         }
         binding.bottomNav.btnNavBeranda.setOnClickListener {
             startActivity(Intent(this, BerandaOperatorActivity::class.java)
@@ -139,12 +137,21 @@ class VerifikasiGuruActivity : AppCompatActivity() {
             .setPositiveButton("Verifikasi") { _, _ ->
                 lifecycleScope.launch {
                     val ok = withContext(Dispatchers.IO) {
-                        db.updateStatusGuru(guru.nip, "verified")
+                        db.updateStatusGuruById(guru.id, "verified")
                     }
                     if (ok) {
-                        Toast.makeText(this@VerifikasiGuruActivity,
-                            "${guru.nama} berhasil diverifikasi", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            this@VerifikasiGuruActivity,
+                            "${guru.nama} berhasil diverifikasi",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         loadData()
+                    } else {
+                        Toast.makeText(
+                            this@VerifikasiGuruActivity,
+                            "Gagal verifikasi — cek ID guru",
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
                 }
             }

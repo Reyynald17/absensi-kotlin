@@ -113,6 +113,7 @@ class AbsenActivity : AppCompatActivity() {
                 putExtra("EXTRA_USER_NAMA", userNama)
                 putExtra("EXTRA_USER_ROLE", userRole)
                 putExtra("EXTRA_USER_KELAS", userKelas)
+                putExtra("EXTRA_MODE", "faceid")
             }
             startActivity(intent)
         }

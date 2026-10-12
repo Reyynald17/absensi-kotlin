@@ -35,12 +35,16 @@ class CalendarDaysAdapter(
         holder.tvDay.text = item.day
 
         when {
+            item.isRed -> {
+                holder.tvDay.setBackgroundResource(R.drawable.bg_day_libur)
+                holder.tvDay.setTextColor(Color.WHITE)
+            }
             item.isGreen -> {
                 holder.tvDay.setBackgroundResource(R.drawable.bg_day_upacara)
                 holder.tvDay.setTextColor(Color.WHITE)
             }
-            item.isRed -> {
-                holder.tvDay.setBackgroundResource(R.drawable.bg_day_libur)
+            item.isBlue -> {
+                holder.tvDay.setBackgroundResource(R.drawable.bg_day_event)
                 holder.tvDay.setTextColor(Color.WHITE)
             }
             else -> {

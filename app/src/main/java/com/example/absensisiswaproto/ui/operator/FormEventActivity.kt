@@ -58,6 +58,8 @@ class FormEventActivity : AppCompatActivity() {
             .format(Date())
         binding.tvTanggal.text = OperatorUtils.formatTanggalIndo(selectedDate)
         binding.tvWaktu.text = "Pilih waktu"
+        selectedKategori = "Libur"
+        binding.spKategori.setText("Libur", false)
     }
 
     private fun setupEditMode() {
@@ -75,7 +77,11 @@ class FormEventActivity : AppCompatActivity() {
         waktuSelesai = event.waktuSelesai.orEmpty()
         binding.tvWaktu.text = if (waktuMulai.isNotBlank() && waktuSelesai.isNotBlank())
             "$waktuMulai - $waktuSelesai" else "Pilih waktu"
-        selectedKategori = event.tipe.replaceFirstChar { it.uppercase() }
+        selectedKategori = when (event.tipe.lowercase()) {
+            "libur" -> "Libur"
+            "upacara" -> "Upacara"
+            else -> "Event"
+        }
         binding.spKategori.setText(selectedKategori, false)
     }
 
@@ -89,7 +95,6 @@ class FormEventActivity : AppCompatActivity() {
         binding.spKategori.setOnItemClickListener { _, _, position, _ ->
             selectedKategori = list[position].nama
         }
-        binding.spKategori.setText("Libur", false)
     }
 
     private fun setupDatePicker() {
