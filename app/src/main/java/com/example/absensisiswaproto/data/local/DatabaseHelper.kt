@@ -200,8 +200,8 @@ class DatabaseHelper(context: Context) :
     }
 
     private fun seedData(db: SQLiteDatabase) {
-        insertUser(db, "12345", "Jacobi Ambasuki", "ngawi123", "siswa", "XII RPL 3")
-        insertUser(db, "67890", "Arata Naoko", "sukiaselilohyah", "siswa", "XII DKV 2")
+        insertUser(db, "12345", "Rudi Santoso", "rudi321", "siswa", "XII RPL 3")
+        insertUser(db, "67890", "Indah Ananda", "indah123", "siswa", "XII DKV 2")
         insertUser(db, "admin01", "Guru", "admin123", "admin", "XI PSPT 1")
         insertUser(db, "11111", "Putri Ananda", "putri123", "siswa", "X DKV 1")
         insertUser(db, "22222", "Putra Wijaya", "putra123", "siswa", "X DKV 1")
@@ -214,10 +214,10 @@ class DatabaseHelper(context: Context) :
         insertGuru(
             db = db,
             nip = "6767",
-            nama = "Fuad Nasir Shapiro",
+            nama = "Nasir Wijaya Putra",
             kelasMapel = "XII RPL 3",
             noTelp = "081234567890",
-            email = "fuad@sekolah.id",
+            email = "nasir@sekolah.id",
             status = "verified"
         )
     }

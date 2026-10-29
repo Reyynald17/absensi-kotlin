@@ -63,14 +63,7 @@ class BerandaGuruActivity : AppCompatActivity() {
         ) "Bu" else "Pak"
         binding.tvGreetingGuru.text = "Halo, $gelar $firstName"
 
-        binding.ivAvatarGuru.setImageResource(getAvatarGuru(guruId))
-    }
-
-    private fun getAvatarGuru(id: Int): Int {
-        return when (id) {
-            1 -> R.drawable.ppfuadnasirshapiro
-            else -> R.drawable.gurucewek
-        }
+        binding.ivAvatarGuru.setImageResource(SiswaHelper.getFotoGuru(guruNama, guruId))
     }
 
     private fun setupTanggal() {

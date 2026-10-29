@@ -22,7 +22,7 @@ object SiswaHelper {
     fun getFotoGuru(nama: String, id: Int = 0): Int {
         val lower = nama.lowercase()
         return when {
-            lower.contains("fuad") -> R.drawable.ppfuadnasirshapiro
+            lower.contains("fuad") || lower.contains("nasir") || lower.contains("wijaya") || lower.contains("putra") -> R.drawable.ppfuadnasirshapiro
             else -> when (id) {
                 1 -> R.drawable.ppfuadnasirshapiro
                 else -> R.drawable.gurucewek
