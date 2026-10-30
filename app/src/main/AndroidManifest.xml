@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
+        android:name=".AbsensiApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -39,6 +40,13 @@
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 
         <activity
+            android:name=".ui.siswa.SiswaMainActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+
+
+        <activity
             android:name=".ui.beranda.BerandaActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
@@ -60,6 +68,11 @@
 
         <activity
             android:name=".ui.kalender.KalenderActivity"
+            android:exported="false"
+            android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
+
+        <activity
+            android:name=".ui.profile.CropImageActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 
@@ -94,7 +107,7 @@
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 
         <activity
-            android:name=".ui.guru.BerandaGuruActivity"
+            android:name=".ui.guru.GuruMainActivity"
             android:exported="false"
             android:theme="@style/Theme.AbsensiSiswaProto.NoActionBar" />
 

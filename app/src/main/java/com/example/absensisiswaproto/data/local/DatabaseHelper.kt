@@ -180,7 +180,7 @@ class DatabaseHelper(context: Context) :
         db.execSQL("""
             INSERT OR IGNORE INTO $TABLE_OPERATOR 
             (nama, password, nama_lengkap, email, no_telp, jabatan)
-            VALUES ('optu1', 'sukingawi', 'Operator Sekolah', 
+            VALUES ('optu1', 'operatorsatu', 'Operator Sekolah', 
                     'OperatorSekolah@Gmail.com', '-', 'Operator Sekolah')
         """.trimIndent())
 
@@ -833,20 +833,27 @@ class DatabaseHelper(context: Context) :
     }
 
     fun simpanAbsen(userId: Int, metode: String): Boolean {
+        if (sudahAbsenHariIni(userId)) {
+            return false
+        }
         val tanggal = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
         val jam = SimpleDateFormat("HH:mm", Locale.getDefault()).format(Date())
 
-        val db = writableDatabase
-        val values = ContentValues().apply {
-            put(COL_ABSEN_USER_ID, userId)
-            put(COL_ABSEN_TANGGAL, tanggal)
-            put(COL_ABSEN_JAM, jam)
-            put(COL_ABSEN_STATUS, "hadir")
-            put(COL_ABSEN_METODE, metode)
-        }
+        return try {
+            val db = writableDatabase
+            val values = ContentValues().apply {
+                put(COL_ABSEN_USER_ID, userId)
+                put(COL_ABSEN_TANGGAL, tanggal)
+                put(COL_ABSEN_JAM, jam)
+                put(COL_ABSEN_STATUS, "hadir")
+                put(COL_ABSEN_METODE, metode)
+            }
 
-        val result = db.insert(TABLE_ABSEN, null, values)
-        return result != -1L
+            val result = db.insert(TABLE_ABSEN, null, values)
+            result != -1L
+        } catch (e: Exception) {
+            false
+        }
     }
 
     fun sudahAbsenHariIni(userId: Int): Boolean {

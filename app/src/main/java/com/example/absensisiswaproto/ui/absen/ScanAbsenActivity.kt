@@ -12,6 +12,7 @@ import android.os.Looper
 import android.view.View
 import android.view.animation.LinearInterpolator
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -20,6 +21,9 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.databinding.ActivityScanAbsenBinding
@@ -62,8 +66,15 @@ class ScanAbsenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityScanAbsenBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.updatePadding(top = statusBarHeight)
+            insets
+        }
 
         db = DatabaseHelper(this)
 
@@ -297,7 +308,7 @@ class ScanAbsenActivity : AppCompatActivity() {
     private fun saveAndFinish(metode: String) {
         Handler(Looper.getMainLooper()).postDelayed({
             if (db.sudahAbsenHariIni(userId)) {
-                Toast.makeText(this, "Kamu sudah absen hari ini", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Anda sudah melakukan absensi hari ini", Toast.LENGTH_SHORT).show()
                 finish()
                 return@postDelayed
             }

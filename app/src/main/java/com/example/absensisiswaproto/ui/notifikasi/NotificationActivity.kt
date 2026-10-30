@@ -1,10 +1,13 @@
 package com.example.absensisiswaproto.ui.notifikasi
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.data.local.DatabaseHelper
@@ -26,8 +29,15 @@ class NotificationActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityNotificationBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.updatePadding(top = statusBarHeight)
+            insets
+        }
 
         db = DatabaseHelper(this)
 
@@ -59,13 +69,11 @@ class NotificationActivity : AppCompatActivity() {
         }
     }
 
-
     private fun getNotifikasiFromDb(): List<Notif> {
         val white = 0xFFFFFFFF.toInt()
         val black = 0xFF000000.toInt()
 
         val notifItems = db.getNotifikasiByUser(userId)
-
 
         if (notifItems.isEmpty()) {
             return emptyList()

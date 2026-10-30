@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_white">
+
+    <RelativeLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="0dp"
+        android:layout_height="150dp"
+        android:background="@drawable/bg_header"
+        android:paddingStart="16dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btnBack"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@null"
+            android:src="@drawable/ic_arrow_back"
+            app:tint="@color/color_white" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btnBack"
+            android:layout_marginTop="12dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_history"
+                app:tint="@color/color_white" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Riwayat Hadir"
+                android:textColor="@color/color_white"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/ivHeaderIllustration"
+            android:layout_width="100dp"
+            android:layout_height="90dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:contentDescription="@null"
+            android:scaleType="fitCenter"
+            android:src="@drawable/figur" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/cardKalender"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/bg_button_rounded"
+        android:elevation="6dp"
+        android:orientation="vertical"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout">
+
+        <LinearLayout
+            android:id="@+id/layoutComboboxHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_kalendar"
+                app:tint="@color/color_light_blue" />
+
+            <TextView
+                android:id="@+id/tvFilterKalender"
+                android:layout_width="0dp"
+                android:gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:text="Kalender"
+                android:textColor="@color/color_black"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <ImageView
+                android:id="@+id/ivComboboxArrow"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_arrow_down"
+                app:tint="@color/color_light_blue" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layoutMonthDropdown"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <TextView android:id="@+id/btnMonthSemua" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Semua Bulan" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthJanuari" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Januari" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthFebuari" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Febuari" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthMaret" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Maret" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthApril" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="April" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthMei" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Mei" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthJuni" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Juni" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthJuli" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Juli" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthAgustus" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Agustus" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthSeptember" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="September" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthOktober" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Oktober" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthNovember" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="November" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+            <TextView android:id="@+id/btnMonthDesember" android:layout_width="match_parent" android:layout_height="36dp" android:layout_marginTop="3dp" android:background="@drawable/bg_month_pill_white" android:gravity="center" android:text="Desember" android:textColor="#123B5D" android:textSize="13sp" android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="16dp"
+        android:clipToPadding="false"
+        android:paddingBottom="110dp"
+        android:background="@drawable/bg_grey_container"
+        android:padding="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cardKalender">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvRiwayat"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            tools:listitem="@layout/item_riwayat_absen" />
+
+        <LinearLayout
+            android:id="@+id/layoutEmptyState"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <ImageView
+                android:layout_width="64dp"
+                android:layout_height="64dp"
+                android:contentDescription="@null"
+                android:src="@drawable/ic_history"
+                app:tint="@color/color_text_hint" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Belum ada riwayat kehadiran"
+                android:textColor="@color/color_text_hint"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -10,8 +10,12 @@ import android.view.ViewGroup
 import android.view.animation.AccelerateInterpolator
 import android.view.animation.DecelerateInterpolator
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.animation.doOnEnd
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.databinding.ActivityAbsenBinding
@@ -38,8 +42,15 @@ class AbsenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityAbsenBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.updatePadding(top = statusBarHeight)
+            insets
+        }
 
         db = DatabaseHelper(this)
 
@@ -341,6 +352,12 @@ class AbsenActivity : AppCompatActivity() {
     private fun simpanAbsenDanKeluar() {
         val metode = pendingMetode ?: return
         pendingMetode = null
+
+        if (db.sudahAbsenHariIni(userId)) {
+            Toast.makeText(this, "Anda sudah melakukan absensi hari ini", Toast.LENGTH_SHORT).show()
+            finish()
+            return
+        }
 
         val berhasil = db.simpanAbsen(userId, metode)
         if (berhasil) {

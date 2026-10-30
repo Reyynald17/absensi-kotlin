@@ -90,17 +90,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@id/previewView" />
 
-    <ImageView
-        android:id="@+id/ivGuruFigure"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_marginBottom="24dp"
-        android:contentDescription="@null"
-        android:src="@drawable/gurucewek"
-        app:layout_constraintBottom_toTopOf="@id/bottomNav"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
     <FrameLayout
         android:id="@+id/bottomNav"
         android:layout_width="0dp"

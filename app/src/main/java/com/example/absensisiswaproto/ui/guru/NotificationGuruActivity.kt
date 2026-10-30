@@ -3,7 +3,11 @@ package com.example.absensisiswaproto.ui.guru
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.data.model.NotifGuru
@@ -16,8 +20,15 @@ class NotificationGuruActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityNotificationGuruBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.updatePadding(top = statusBarHeight)
+            insets
+        }
 
         setupHeader()
         setupRecyclerView()
@@ -90,12 +101,26 @@ class NotificationGuruActivity : AppCompatActivity() {
     }
 
     private fun setupBottomNav() {
-        binding.btnHomeGuru.setOnClickListener { finish() }
+        binding.btnHomeGuru.setOnClickListener {
+            val intent = Intent(this, GuruMainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("EXTRA_OPEN_TAB", GuruMainActivity.TAB_HOME)
+            }
+            startActivity(intent)
+        }
         binding.btnSearchGuru.setOnClickListener {
-            startActivity(Intent(this, SearchKelasActivity::class.java))
+            val intent = Intent(this, GuruMainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("EXTRA_OPEN_TAB", GuruMainActivity.TAB_SEARCH)
+            }
+            startActivity(intent)
         }
         binding.btnProfileGuru.setOnClickListener {
-            startActivity(Intent(this, ProfileGuruActivity::class.java))
+            val intent = Intent(this, GuruMainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("EXTRA_OPEN_TAB", GuruMainActivity.TAB_PROFILE)
+            }
+            startActivity(intent)
         }
     }
 }

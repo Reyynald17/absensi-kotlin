@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.view.animation.LinearInterpolator
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.camera.core.CameraSelector
@@ -15,6 +16,9 @@ import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.databinding.ActivityScanQrBinding
 import com.google.mlkit.vision.barcode.BarcodeScanning
@@ -34,8 +38,15 @@ class ScanQrActivity : AppCompatActivity() {
     @androidx.camera.core.ExperimentalGetImage
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityScanQrBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.updatePadding(top = statusBarHeight)
+            insets
+        }
 
         db = DatabaseHelper(this)
 
@@ -77,17 +88,25 @@ class ScanQrActivity : AppCompatActivity() {
 
     private fun setupBottomNav() {
         binding.btnHomeGuru.setOnClickListener {
-            startActivity(
-                Intent(this, BerandaGuruActivity::class.java)
-                    .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP)
-            )
-            finish()
+            val intent = Intent(this, GuruMainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("EXTRA_OPEN_TAB", GuruMainActivity.TAB_HOME)
+            }
+            startActivity(intent)
         }
         binding.btnSearchGuru.setOnClickListener {
-            // Already on QR Scan page
+            val intent = Intent(this, GuruMainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("EXTRA_OPEN_TAB", GuruMainActivity.TAB_SEARCH)
+            }
+            startActivity(intent)
         }
         binding.btnProfileGuru.setOnClickListener {
-            startActivity(Intent(this, ProfileGuruActivity::class.java))
+            val intent = Intent(this, GuruMainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                putExtra("EXTRA_OPEN_TAB", GuruMainActivity.TAB_PROFILE)
+            }
+            startActivity(intent)
         }
     }
 

@@ -3,7 +3,11 @@ package com.example.absensisiswaproto.ui.guru
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.databinding.ActivityLoginGuruBinding
 
@@ -14,8 +18,15 @@ class LoginGuruActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityLoginGuruBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.updatePadding(top = statusBarHeight)
+            insets
+        }
 
         db = DatabaseHelper(this)
 
@@ -41,7 +52,7 @@ class LoginGuruActivity : AppCompatActivity() {
                 Toast.makeText(this, "NIP atau Nama Lengkap salah", Toast.LENGTH_SHORT).show()
             } else {
                 GuruSession.save(this, guru.id, guru.nip, guru.nama)
-                val intent = Intent(this, BerandaGuruActivity::class.java).apply {
+                val intent = Intent(this, GuruMainActivity::class.java).apply {
                     putExtra("EXTRA_GURU_ID", guru.id)
                     putExtra("EXTRA_GURU_NIP", guru.nip)
                     putExtra("EXTRA_GURU_NAMA", guru.nama)

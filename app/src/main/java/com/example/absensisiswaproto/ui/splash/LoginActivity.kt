@@ -11,13 +11,17 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.updatePadding
 import com.example.absensisiswaproto.R
 import com.example.absensisiswaproto.data.local.DatabaseHelper
 import com.example.absensisiswaproto.data.model.User
 import com.example.absensisiswaproto.databinding.ActivityLoginBinding
-import com.example.absensisiswaproto.ui.beranda.BerandaActivity
 import com.example.absensisiswaproto.ui.guru.WelcomeGuruActivity
+import com.example.absensisiswaproto.ui.siswa.SiswaMainActivity
 
 class LoginActivity : AppCompatActivity() {
 
@@ -26,8 +30,15 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { view, insets ->
+            val statusBarHeight = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top
+            view.updatePadding(top = statusBarHeight)
+            insets
+        }
 
         db = DatabaseHelper(this)
 
@@ -91,7 +102,7 @@ class LoginActivity : AppCompatActivity() {
         }, 800)
 
         Handler(Looper.getMainLooper()).postDelayed({
-            val intent = Intent(this, BerandaActivity::class.java).apply {
+            val intent = Intent(this, SiswaMainActivity::class.java).apply {
                 putExtra("EXTRA_USER_ID", user.id)
                 putExtra("EXTRA_USER_NIS", user.nis)
                 putExtra("EXTRA_USER_NAMA", user.nama)
